@@ -1,0 +1,443 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Functioning &#8212; SourceFu 0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Planned Features" href="planned features.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+    <link rel="canonical" href="https://big5-security.com/sourcefu/functioning.html"/>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="functioning">
+<h1>Functioning<a class="headerlink" href="#functioning" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="a-generic-methodology-for-sources-deobfuscation">
+<h2>A generic methodology for sources deobfuscation<a class="headerlink" href="#a-generic-methodology-for-sources-deobfuscation" title="Permalink to this headline">¶</a></h2>
+<p>Partial Evaluation consists in interpreting only subparts of the AST of a source code in order to simplify them. With such a thing, interpretation does not have to be fully correct and extensive, but results are often more extensive than when one only uses regexes. The following paragraph aims at explaining the full approach behind SourceFu.</p>
+<p>First, the source language has to be identified. Indeed, each languages has some intrinsic particularities and it’s not possible to define a generic program for every source language. The first step of the methodology is to create a grammar for the language, in order to create a parser for the said language. Once the parser is ready, the deobfuscation is realized through 3 steps :</p>
+<ul>
+<li><p class="first">the first step consists in code simplification (simplifier step), that does not need any interpretation at all. The source is parsed and the abstract syntax tree is constructed. Comments are first deleted (actually it might be interesting to determine if comments are useful or not). To do so, each node in the abstract tree that are comments are replaced with an empty line. Also, a deadstore optimization is realized. To do so, while traversing the parse tree, for each local scope, all symbols are registered in a list and their usage is tracked. Then, every symbol definition that does not have an associated usage is deleted. The algorithm associated with this step is the following in pseudo code:</p>
+<blockquote>
+<div><p>1) constructing the lists:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">When</span> <span class="n">meeting</span> <span class="n">a</span> <span class="n">symbol</span> <span class="n">definition</span> <span class="p">:</span>
+    <span class="k">if</span> <span class="n">the</span> <span class="n">symbol</span> <span class="n">definition</span> <span class="ow">is</span> <span class="n">tied</span> <span class="n">to</span> <span class="n">a</span> <span class="n">function</span> <span class="n">call</span><span class="p">:</span>
+        <span class="k">return</span><span class="p">;</span>
+
+    <span class="n">add</span> <span class="n">the</span> <span class="n">symbol</span> <span class="n">to</span> <span class="n">symbol</span> <span class="nb">list</span>
+
+
+<span class="n">When</span> <span class="n">meeting</span> <span class="n">a</span> <span class="n">symbol</span> <span class="n">usage</span> <span class="p">:</span>
+    <span class="k">if</span> <span class="n">the</span> <span class="n">symbol</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">same</span> <span class="n">than</span> <span class="n">the</span> <span class="n">scope</span><span class="s1">&#39;s name (i.e. it&#39;</span><span class="n">s</span> <span class="n">the</span> <span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">function</span> <span class="k">for</span> <span class="n">example</span><span class="p">):</span>
+        <span class="k">return</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="n">the</span> <span class="n">symbol</span> <span class="ow">is</span> <span class="n">one</span> <span class="n">of</span> <span class="n">the</span> <span class="n">argument</span> <span class="n">of</span> <span class="n">the</span> <span class="n">scope</span><span class="p">:</span>
+        <span class="k">return</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="n">the</span> <span class="n">symbol</span> <span class="ow">is</span> <span class="n">already</span> <span class="n">defined</span> <span class="n">within</span> <span class="n">the</span> <span class="n">definition</span> <span class="nb">list</span> <span class="p">(</span><span class="n">comparison</span> <span class="n">by</span> <span class="n">the</span> <span class="n">index</span> <span class="n">of</span> <span class="n">the</span> <span class="n">token</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">parsing</span><span class="p">):</span>
+        <span class="k">return</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="n">the</span> <span class="n">symbol</span> <span class="ow">is</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">definition</span> <span class="n">statement</span> <span class="k">for</span> <span class="n">the</span> <span class="n">same</span> <span class="n">symbol</span> <span class="p">(</span><span class="n">like</span> <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">return</span><span class="p">;</span>
+
+   <span class="n">label</span> <span class="n">the</span> <span class="n">latest</span> <span class="n">given</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">symbol</span> <span class="nb">list</span> <span class="k">as</span> <span class="n">used</span>
+</pre></div>
+</div>
+<p>2) resolving the deadstore:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">each</span> <span class="n">scope</span><span class="p">:</span>
+   <span class="k">for</span> <span class="n">every</span> <span class="n">symbol</span> <span class="n">definition</span><span class="p">:</span>
+       <span class="k">if</span> <span class="n">symbol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">marked</span> <span class="k">as</span> <span class="n">used</span><span class="p">:</span>
+           <span class="n">delete</span> <span class="n">the</span> <span class="n">definition</span>
+</pre></div>
+</div>
+<p>Finally, once deadstore optimization is done, the source might contains control flow structures, e.g. if statements, loops, or functions,  that are empty. A last pass ensures those control flow structures, giving nothing to the code, are erased also. Also, if some control structures are known to be invalid or never used, then it is simply erased from the code, like the following one (here the whole if statement could be erased):</p>
+</div></blockquote>
+</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">If</span> <span class="bp">False</span> <span class="n">Then</span>
+        <span class="n">Func1</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">End</span> <span class="k">if</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>the second step consists in rewriting the code into a simplified form. To do so, the code is interpreted as much as we can, and the AST is annotated with the values of nodes that can be interpreted. Once the interpretation is done, AST is parsed to replace sets of nodes with the associated value or the alternative text. To fully understand that, let’s take the following statement : <cite>X = 2 + 3</cite></li>
+</ul>
+<p>The associated abstract syntaxt tree of this statement could be the following :</p>
+<a class="reference internal image-reference" href="_images/ast1.png"><img alt="_images/ast1.png" class="align-center" src="_images/ast1.png" style="width: 332.8px; height: 261.6px;" /></a>
+<p>Here, the expression <cite>2+3</cite> can be evaluated to <cite>5</cite>. The AST can so be annotated like so:</p>
+<a class="reference internal image-reference" href="_images/ast2.png"><img alt="_images/ast2.png" class="align-center" src="_images/ast2.png" style="width: 336.8px; height: 309.6px;" /></a>
+<p>Then, replacement is done following this algortihm:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">traverse_node</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="n">annotated</span> <span class="ow">and</span> <span class="n">node</span><span class="s1">&#39;s children number &gt; 2 :</span>
+       <span class="n">replace</span> <span class="n">current</span> <span class="n">node</span> <span class="ow">and</span> <span class="nb">all</span> <span class="n">of</span> <span class="n">its</span> <span class="n">children</span> <span class="k">with</span> <span class="n">the</span> <span class="n">annotation</span><span class="p">;</span>
+       <span class="n">end</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="n">each</span> <span class="n">children</span><span class="p">:</span>
+        <span class="n">traverse_node</span><span class="p">(</span><span class="n">children</span><span class="p">)</span>
+
+<span class="n">traverse_node</span><span class="p">(</span><span class="n">start</span> <span class="n">node</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>For this step, the list of modifications is explained in the next paragraph.</p>
+<p>Step 1 and 2 are iterative : they are run consecutively until no more modification is realized on the code. Indeed, the interpretation may lead to useless definitions. Unfortunately, there is no way to tell first how many iterations are needed to deobfuscate.</p>
+<ul class="simple">
+<li>the final step is a beautifying step. The idea here is to provide a syntax easier to read for the human eye, by setting a correct indentation to the code, and to remove potential obfuscation based on variables names by renaming them with an easier to read name.</li>
+</ul>
+</div>
+<div class="section" id="details">
+<h2>details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h2>
+<p>The following section describes each of the transformation that may be applied to the code by SourceFu. The presentation is generic, and each of the transformations could normally be applied to multiple languages. In the code however, every transformation needs to be adapted to the underlying language. The following section presents what is done for VBA, as it’s for now the only language supported by SourceFu. This sections should evolve as such in future.</p>
+<p>For each transformation realized by SourceFu, a status is given. a <span style="color:green;">completed</span> statement means that normally the transformation should work (SourceFu still remains a huge work in progress). A <span style="color:orange;">not complete</span> statement means there is still some work to do (like all cases are not taken into account now), bu the transformation is still safe to be used. An <span style="color:red;">experimental</span> statement means however that the transformation is not safe to be used for now, as it may transforms things that should not be transformed. Finally, <span style="color:blue;">TODO</span> statement presents a planned transformation that still needs to be done.</p>
+<div class="section" id="simplifier-step">
+<h3>Simplifier step<a class="headerlink" href="#simplifier-step" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="comments-removal">
+<h4>Comments removal<a class="headerlink" href="#comments-removal" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><em>status</em> : <span style="color:green;">completed</span></li>
+</ul>
+<p>This transformation simply removes every comments from the code. Ideally, i would like to create some heuristics to be able to say if comments appear to be interesting or not. Unfortunately, i don’t have the database to say so…</p>
+<p>The following code :</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="s1">&#39; this is a comment for func1</span>
+<span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<span class="s1">&#39;useless comment</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">REM</span> <span class="n">ahah</span> <span class="n">dafuck</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+<p>is transformed as such :</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="if-statements-simplifier">
+<h4>IF statements simplifier<a class="headerlink" href="#if-statements-simplifier" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><em>status</em> : <span style="color:green;">completed</span></li>
+</ul>
+<p>The expression interpreter rewrites boolean expression, if they can be evaluated, by “False” or “True”. As such, it’s possible to write a simple IF statements simplifier depending on the text of the boolean expressions used in the complete if-elseif-else structure. Basically, if all boolean expressions of the if-elseif-else structure are either equal to “False” or “True”, then the complete structure can be simplified by removing all cases that are evaluated to “False”. It then remains the only block that will be executed by the code. In future, this simplifier should not depend of the text but from the boolean expression value instead. Here is an example :</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">If</span> <span class="bp">False</span> <span class="n">Then</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">Else</span> <span class="n">If</span> <span class="bp">True</span> <span class="n">Then</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">Else</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+<p>This previous code is transformed like that by this transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="case-statements-simplifier">
+<h4>Case statements simplifier<a class="headerlink" href="#case-statements-simplifier" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><em>status</em> : <span style="color:blue;">TODO</span></li>
+</ul>
+<p>As in the previous transformation, only the case evaluating to True is kept by SourceFu in a switch statement, if the expression can be evaluated. The idea is so to simply get the value of the expression in the Select, because the partial interpreter should have transformed it. Here is an example :</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">Select</span> <span class="n">Case</span> <span class="mi">3</span>
+        <span class="n">Case</span> <span class="mi">1</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="n">Case</span> <span class="mi">2</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="mi">6</span>
+        <span class="n">Case</span> <span class="mi">3</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">End</span> <span class="n">Select</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+<p>This previous code is transformed like that by this transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="loops-simplifier">
+<h4>Loops simplifier<a class="headerlink" href="#loops-simplifier" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><em>status</em> : <span style="color:blue;">TODO</span></li>
+</ul>
+<p>The idea here is to move out of loops all statements that are not impacted by the loop itself. The complete list of what is realized is still not done, as this transformation is still not coded :P. Here is an example of what could be done :</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">For</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span> <span class="n">To</span> <span class="mi">5</span>
+        <span class="n">Dim</span> <span class="n">Y</span> <span class="o">=</span> <span class="mi">3</span> <span class="k">as</span> <span class="n">Integer</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="n">Y</span>
+    <span class="n">Next</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+<p>This previous code is transformed like that by this transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">Dim</span> <span class="n">Y</span> <span class="o">=</span> <span class="mi">3</span> <span class="k">as</span> <span class="n">Integer</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">For</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span> <span class="n">To</span> <span class="mi">5</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="n">Y</span>
+    <span class="n">Next</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dead-code-elimination">
+<h4>Dead Code elimination<a class="headerlink" href="#dead-code-elimination" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><em>status</em> : <span style="color:orange;">not complete</span></li>
+</ul>
+<p>The idea here is to delete code that does not affect the program. For now, the idea is to delete every variables declaration realized before subsequent declarations until the variable is used in the program. In future, the idea will be to also delete code behind “Exit Sub” statement and such. Here is an example of what is realized now:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+<p>In this example, there is no need to keep the first declaration of X. The code can be so transformed like this :</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="vba-constants-replacement">
+<h4>VBA Constants replacement<a class="headerlink" href="#vba-constants-replacement" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><em>status</em> : <span style="color:orange;">not complete</span></li>
+</ul>
+<p>VBA defines multiple constants, that are defined as this by the language. In order to treat them for partial evaluation, those are replaced by their value. Unfortunately, this transformation does not increase the visibility, and it should be able to revert the transformation back. Here is an example of the transformation realized:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">StrConv</span><span class="p">(</span><span class="s2">&quot;CouCou&quot;</span><span class="p">,</span> <span class="n">vbLowerCase</span><span class="p">)</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+<p>to :</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">StrConv</span><span class="p">(</span><span class="s2">&quot;CouCou&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="empty-blocks-removal">
+<h4>Empty blocks removal<a class="headerlink" href="#empty-blocks-removal" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><em>status</em> : <span style="color:green;">completed</span></li>
+</ul>
+<p>This transformation deletes the structures in which there are empty blocks. Those structures can be loops, conditionnal branchs as well as Functions or Subs. Here is an example :</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">If</span> <span class="mi">3</span> <span class="o">=</span> <span class="mi">2</span> <span class="n">Then</span>
+    <span class="n">End</span> <span class="n">If</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+<p>Here, the conditionnal branch is useless because it does nothing. It is simply deleted by the transformation :</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="partial-evaluation-step">
+<h3>Partial evaluation step<a class="headerlink" href="#partial-evaluation-step" title="Permalink to this headline">¶</a></h3>
+<p><em>this paragraph is still under construction</em></p>
+<p>This step is not complete at all for now. Hopefully, a complete interpretation of the code should be realized. From that, AST is annotated and rewriting is realized. Rewriting rules should also be specified completely, and that is not done for now. Especially, it’s hard to model complex objects, loops, and arrays. The following things are done for now:</p>
+<div class="section" id="standard-functions-evaluation">
+<h4>Standard Functions evaluation<a class="headerlink" href="#standard-functions-evaluation" title="Permalink to this headline">¶</a></h4>
+<p>Several standard functions of VBA are emulated given the fact that their arguments can be evaluated correctly.</p>
+</div>
+<div class="section" id="expressions-simplification">
+<h4>Expressions simplification<a class="headerlink" href="#expressions-simplification" title="Permalink to this headline">¶</a></h4>
+<p>logic expressions and operand expressions are simplified into reduced expressions.</p>
+</div>
+<div class="section" id="constants-propagation">
+<h4>Constants propagation<a class="headerlink" href="#constants-propagation" title="Permalink to this headline">¶</a></h4>
+<p>When a variable is assigned, then its value is propagated throughout the program, unless it’s redefined within a loop.</p>
+</div>
+<div class="section" id="functions-evaluation">
+<h4>Functions evaluation<a class="headerlink" href="#functions-evaluation" title="Permalink to this headline">¶</a></h4>
+<p>The idea here is to simply check if one function returns a constant value. If so, any call to this function will be replaced by the constant value.</p>
+<p>Several problematics still need to be treated. For example, one of the problem of VBA is the fact there is no entry point per se. It’s so particularly difficult to treat correctly global variables.</p>
+</div>
+</div>
+<div class="section" id="beautifying-step">
+<h3>Beautifying Step<a class="headerlink" href="#beautifying-step" title="Permalink to this headline">¶</a></h3>
+<p>The final step of SourceFu is to improve the syntax of the code once every transformations have been realized. For that, two transformations are done :</p>
+<div class="section" id="variables-renaming">
+<h4>Variables renaming<a class="headerlink" href="#variables-renaming" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><em>status</em> : <span style="color:red;">experimental</span></li>
+</ul>
+<p>On of the common obfuscation technique is to use variables names that are difficult to read or distinguish for humans. To circumvent this, this transformation renames every variables based on their scope. The following nomenclature is done now : &lt;scope&gt;_&lt;n°&gt;. Unfortunately, this transformation still renames more than necessary (especially, it renames object properties, and there are some standard names that should not be renamed). Here is an example of what this transformation may do:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Dim</span> <span class="n">U</span> <span class="k">as</span> <span class="n">Integer</span>
+<span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">Dim</span> <span class="n">Y</span> <span class="o">=</span> <span class="mi">3</span> <span class="k">as</span> <span class="n">Integer</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">For</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span> <span class="n">To</span> <span class="mi">5</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="n">Y</span>
+    <span class="n">Next</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span> <span class="o">+</span> <span class="n">U</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+<p>This code is transformed as such :</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Dim</span> <span class="n">global_1</span> <span class="k">as</span> <span class="n">Integer</span>
+<span class="n">Function</span> <span class="n">Func_1</span><span class="p">()</span>
+    <span class="n">local_1</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">Dim</span> <span class="n">local_2</span> <span class="o">=</span> <span class="mi">3</span> <span class="k">as</span> <span class="n">Integer</span>
+    <span class="n">global_1</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">For</span> <span class="n">local_3</span> <span class="o">=</span> <span class="mi">1</span> <span class="n">To</span> <span class="mi">5</span>
+        <span class="n">local_1</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">local_3</span> <span class="o">+</span> <span class="n">local_2</span>
+    <span class="n">Next</span>
+    <span class="n">Func1</span> <span class="o">=</span> <span class="n">local_1</span> <span class="o">+</span> <span class="n">global_1</span>
+<span class="n">End</span> <span class="n">Function</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="beautifying">
+<h4>Beautifying<a class="headerlink" href="#beautifying" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><em>status</em> : <span style="color:green;">completed</span></li>
+</ul>
+<p>a standard beautifying is applied to the code at the end : empty lines are removed and indentation is set correctly.</p>
+</div>
+</div>
+</div>
+<div class="section" id="going-further">
+<h2>Going Further<a class="headerlink" href="#going-further" title="Permalink to this headline">¶</a></h2>
+<p>Actually, SourceFu is hugely impacted by the control flow structures of the source as those are not interpreted. More, functions evaluation is simply tied to check if the return value can be evaluated or not as constant. As such, SourceFu might not provide good enough results.</p>
+<p>To overcome those caveats, one point could be to write a somewhat full interpreter along with SourceFu. While the code is interpreted, the AST is still annotated by the Interpreter if it can. Finally, operations can still be realized given its results.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SourceFu</a></h1>
+
+
+
+<p class="blurb">a deobfuscation framework</p>
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="some state of the art.html">Some state of the art</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Functioning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#a-generic-methodology-for-sources-deobfuscation">A generic methodology for sources deobfuscation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#details">details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#simplifier-step">Simplifier step</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#partial-evaluation-step">Partial evaluation step</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#beautifying-step">Beautifying Step</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#going-further">Going Further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="planned features.html">Planned Features</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="quickstart.html" title="previous chapter">Quickstart</a></li>
+      <li>Next: <a href="planned features.html" title="next chapter">Planned Features</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zilio Nicolas.
+      
+      |
+      <a href="_sources/functioning.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

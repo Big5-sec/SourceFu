@@ -1,0 +1,5 @@
+**/*.pyc
+**/*~
+sourcefu/bin/**/*
+sourcefu/build/**/*        
+sourcefu/.gradle/**/*

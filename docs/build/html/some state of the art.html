@@ -1,0 +1,127 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Some state of the art &#8212; SourceFu 0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quickstart" href="quickstart.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+    <link rel="canonical" href="https://big5-security.com/sourcefu/some state of the art.html"/>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="some-state-of-the-art">
+<h1>Some state of the art<a class="headerlink" href="#some-state-of-the-art" title="Permalink to this headline">¶</a></h1>
+<p>Automatic deobfuscation of source code is not an easy subject. Basically, almost all tools that exist do either the following:</p>
+<ul class="simple">
+<li>a runtime deobfuscation. The idea is basically to run the sample in a sandboxed environment, and use instrumentation to extract interesting information. A simple example is to execute some javascript in a sandboxed environment and replace calls to <em>eval</em> function with <em>alert</em> or <em>console.log</em>. A more advanced example seems to be the AMSI interface of Windows, that seems to provide somehow every call to function with their arguments. An another example (and a great project) is the Vipermonkey project from &#64;decalage2. The idea is to extract every potential interesting calls to functions known to be used in malicious documents and to see their arguments.</li>
+<li>a static deobfuscation based on beautifying and regexes replacement. A good example is the powershell deobfuscator made by endgame (unfortunately not open sourced).</li>
+</ul>
+<p>In the first case, the source code cannot be interacted directly with (what about running yara huh?). It means also that you almost needs an analysis environment capable of interacting with the analyzed language. As such, those tools are often coded in the same language than the one inspected. Also, potentially, a tool can auto-pown itself as code stay executed.</p>
+<p>In the second case, it appears that most of the time those tools do not provide good enough results.</p>
+<p>In order to overcome those caveats, some people proposed to use what is called partial evaluation. The idea for that is to interpret only tiny pieces of a whole AST of the languages, and then modify it to have a more compact AST. It should also provide static transformations not based on the interpretation to simplify the code. Indeed, it avoids a complete interpretation, prone to errors, and avoids potential faults in regexes. This process can also be multi-pass, in order to overcome a multi-layer approach.</p>
+<p>A deobfuscator based on partial evaluation will do things like :</p>
+<ul class="simple">
+<li>dead code elimination</li>
+<li>basic constant folding</li>
+<li>expressions simplification</li>
+</ul>
+<p>Some tools aim at providing such an analysis. Those are JSDetox and JStillery, for javascript only.</p>
+<p>Unfortunately, no other languages have tools that do so. SourceFu aims so at providing a generic tool to answer this caveat, while providing a better deobfuscation framework.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SourceFu</a></h1>
+
+
+
+<p class="blurb">a deobfuscation framework</p>
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Some state of the art</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functioning.html">Functioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="planned features.html">Planned Features</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="introduction.html" title="previous chapter">Introduction</a></li>
+      <li>Next: <a href="quickstart.html" title="next chapter">Quickstart</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zilio Nicolas.
+      
+      |
+      <a href="_sources/some state of the art.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,132 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Planned Features &#8212; SourceFu 0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="functioning" href="functioning.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+    <link rel="canonical" href="https://big5-security.com/sourcefu/planned features.html"/>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="planned-features">
+<h1>Planned Features<a class="headerlink" href="#planned-features" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p class="first">find a better deobfuscation routine : specify completely rules producing a “better visibility” on the code. Basically, one could argue the following rule works : if a replacement to be done is more concise than then expression to be replaced, then it should be done. Also, a variable should be replaced only if it permits expression replacement afterwards. <br/><br/></p>
+</li>
+<li><p class="first">provide a better cli for sourcefu, with the following options (with something similar to Cuckoo):</p>
+<blockquote>
+<div><ul class="simple">
+<li>standalone : a terminal use of the tool</li>
+<li>server : lauching a server that is able to realize operations through an API</li>
+<li>client : launching a server offering a complete graphical interface to SourceFu (ideally, something with syntax coloring, renaming support like in IDA pro, and meld like interface) <br/><br/></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">provide analysis such as ViperMonkey, callgraph, and such <br/><br/></p>
+</li>
+<li><p class="first">use of database to keep results <br/><br/></p>
+</li>
+<li><p class="first">plugin support, huh??? (yara, VT,…) <br/><br/></p>
+</li>
+<li><p class="first">support more language <br/><br/></p>
+</li>
+<li><p class="first">support multiple languages in the same code, like for example when a VBA macro calls an obfuscated Powershell… <br/><br/></p>
+</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SourceFu</a></h1>
+
+
+
+<p class="blurb">a deobfuscation framework</p>
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="some state of the art.html">Some state of the art</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functioning.html">functioning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Planned Features</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="functioning.html" title="previous chapter">functioning</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zilio Nicolas.
+      
+      |
+      <a href="_sources/planned features.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
