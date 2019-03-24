@@ -1,10 +1,14 @@
 package sourcefu.webserver;
 import static spark.Spark.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import sourcefu.apiserver.APIServer;
+import sourcefu.database.Analysis;
+import sourcefu.database.AnalysisController;
 import spark.ModelAndView;
 import spark.template.velocity.VelocityTemplateEngine;
 
@@ -13,8 +17,9 @@ public class WebServer {
     public WebServer () {
     	staticFiles.location("/public");
         get("/", (req, res) -> renderHomePage());
-//        get("/editAnalysis/:analysisId", (req, res) -> renderEditAnalysis(req.params("analysisId")));
-//        get("/workAnalysis/:analysisId", (req, res) -> renderWorkAnalysis(req.params("analysisId")));
+        get("/newAnalysis", (req, res) -> renderNewAnalysisPage());
+        get("/editAnalysis/:analysisId", (req, res) -> renderEditAnalysis());//Integer.parseInt(req.params("analysisId"))));
+        get("/workAnalysis/:analysisId", (req, res) -> renderWorkAnalysis(req.params("analysisId")));//Integer.parseInt(req.params("analysisId"))));
 //    }
     	APIServer apiServer = new APIServer();
     	
@@ -22,24 +27,34 @@ public class WebServer {
     }
 
 
-    private static String renderTemplate(String template, Map model) {
+ 	private static String renderTemplate(String template, Map model) {
         return new VelocityTemplateEngine().render(new ModelAndView(model, template));
     }
 	
     private static String renderHomePage(){
         Map<String, Object> model = new HashMap<>();
+        model.put("analyses", AnalysisController.getAnalyses());
         return renderTemplate(WebUtils.Templates.HOME,model);
     }
-}
-/*
-    private static renderEditAnalysis(Integer analysisId){
+    
+    private String renderNewAnalysisPage() {
         Map<String, Object> model = new HashMap<>();
-        return renderTemplate("velocity/analysis_edit.vm",model);
+        return renderTemplate(WebUtils.Templates.NEWANALYSIS,model);
+ 	}
+
+    private static String renderEditAnalysis(/*Integer analysisId*/){
+        Map<String, Object> model = new HashMap<>();
+        return renderTemplate(WebUtils.Templates.EDITANALYSIS,model);
     }
 
-    private static renderWorkAnalysis(Integer analysisId){
+    private static String renderWorkAnalysis(String analysisId){
         Map<String, Object> model = new HashMap<>();
-        return renderTemplate("velocity/analysis_work.vm",model);
-    }*/
+        System.out.println("this is analysisId : "+ analysisId);
+        String originalData = AnalysisController.getOriginalData(analysisId);
+        model.put("original", originalData);
+        return renderTemplate(WebUtils.Templates.WORKANALYSIS,model);
+    }
+}
+
     
 

@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="Nicolas Zilio">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-   <title>SourceFu new analysis</title>
+   <title>SourceFu edit analysis</title>
 
     <style>
       .bd-placeholder-img {
@@ -29,20 +29,22 @@
   </head>
   <body>
     <nav class="navbar navbar-dark fixed-top bg-dark p-0 flex-md-nowrap">
-      <a class="navbar-brand col-sm-3 col-md-2 ml-2" href="#">SourceFu</a>
+      <a class="navbar-brand col-sm-3 col-md-2 ml-2" href="/">SourceFu</a>
       <input class="form-control form-control-dark col-sm-3 mr-5" type="text" placeholder="Search" aria-label="Search">
     </nav>
     <main role="main" class="mt-4 ml-sm-5 mr-sm-5 px-4">
-      <form action="/action_page.php">
-        <div class="form-group">
-          <label for=""></label>
-          <input type="email" class="form-control" id="email">
-        </div>
-        <div class="checkbox">
-          <label><input type="checkbox"> Launch a complete analysis and save result as a new step</label>
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-      </form> 
+      <div class="container">
+          <h2 class="pb-4 mt-4">Modifying an analysis</h2>
+          <form action="" method="post" class="mt-4">
+            <div class="form-group row">
+              <label class="col-form-label col-sm-2" for="analysisname"><h6>Analysis name :</h6></label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="analysisname" name="analysisname" placeholder="Enter analysis name">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary float-right">Submit</button>
+          </form>
+      </div>
     </main>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

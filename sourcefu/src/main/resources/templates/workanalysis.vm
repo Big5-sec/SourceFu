@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Nicolas Zilio">
+    <link rel="stylesheet" href="/js/codemirror.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+     <link href="test_css.css" rel="stylesheet">
+    <title>SourceFu</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-dark static-top bg-dark p-0 flex-md-nowrap">
+      <a class="navbar-brand col-sm-3 col-md-2 ml-2" href="/">SourceFu</a>
+    </nav>
+    <main role="main" class="mt-4 ml-sm-5 mr-sm-5">
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="view-tab" data-toggle="tab" href="#view" role="tab" aria-controls="view" aria-selected="true">View</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="work-tab" data-toggle="tab" href="#work" role="tab" aria-controls="work" aria-selected="false">Work</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="step-tab" data-toggle="tab" href="#steps" role="tab" aria-controls="steps" aria-selected="false">Steps</a>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <div id="view" class="tab-pane fade show active" role="tabpanel" aria-labelledby="view-tab">
+          <h4>deobfuscated</h4>
+          <pre>$deobfuscated</pre>
+          <h4>original</h4>
+          <pre>$original</pre>
+        </div>
+        <div id="work" class="tab-pane fade" role="tabpanel" aria-labelledby="work-tab">
+          <textarea id="workpane">$deobfuscated</textarea>
+        </div>
+        <div id="steps" class="tab-pane fade" role="tabpanel" aria-labelledby="step-tab">
+          <h3>Menu 2</h3>
+          <p>Some content in menu 2.</p>
+        </div>
+      </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"  crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"  crossorigin="anonymous"></script>
+    <script src="/js/codemirror.js"></script>
+    <script>
+      var editor = CodeMirror.fromTextArea(document.getElementById("workpane"), {lineNumbers: true});
+    </script>
+  </body>
+</html>
