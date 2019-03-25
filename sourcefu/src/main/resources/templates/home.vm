@@ -36,9 +36,10 @@
             </tr>
           </thead>
           <tbody>
+            #set ( $count = 0)
             #foreach( $analysis in $analyses)
               <tr>
-              <td class="align-middle">$analysis.id</td>
+              <td class="align-middle">$count</td>
               <td class="align-middle">$analysis.name</td>
               <td class="align-middle">$analysis.filename</td>
               <td class="align-middle">
@@ -48,19 +49,51 @@
                   $analysis.currentStep
                 #end
               </td>
-              <td class="align-middle"><a role="button" class="btn btn-info" href="/editAnalysis/$analysis.id"><i data-feather="settings"></i></a></th>
-              <td class="align-middle"><a role="button" class="btn btn-danger" href="/"><i data-feather="trash"></i></a></th>
-              <td class="align-middle"><a role="button" class="btn btn-dark" href="/workAnalysis/$analysis.id"><i data-feather="log-in"></i></a></th>
+              <td class="align-middle"><a role="button" class="btn btn-info" href="/editAnalysis/$analysis.id"><i data-feather="settings"></i></a></td>
+              <td class="align-middle"><button onclick="delAnalysis('$analysis.id')" class="btn btn-danger"><i data-feather="trash"></i></button></td>
+              <td class="align-middle"><a role="button" class="btn btn-dark" href="/workAnalysis/$analysis.id"><i data-feather="log-in"></i></a></td>
               </tr>
+           #set ( $count = $count + 1 )
            #end
           </tbody>
         </table>
       </div>
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header" style="background:#e85e6c;">
+              <h5 class="modal-title" id="exampleModalLabel">Error</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              the provided analysis Id does not match an existing one!
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"  crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"  crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
     <script>feather.replace()</script>
+    <script>
+      function delAnalysis(analysisId) {
+      fetch('api/analysis/delAnalysis/'+ analysisId)
+      .then(function(response) {
+      return response.json();
+      })
+      .then(function(myJson) {
+      if(myJson.status == 'OK') {
+      location.reload();
+      } else {
+        $("#exampleModal").modal();
+      }
+      })
+      };
+    </script>
   </body>
 </html>

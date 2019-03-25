@@ -38,4 +38,16 @@ public class AnalysisController {
 		return analysis.getOriginalData();
 	}
 		
+	
+	public static int deleteAnalysis(String analysisId) {
+		ds = dbHelper.getDataStore();
+		ObjectId id = new ObjectId(analysisId);
+		Analysis analysis = ds.createQuery(Analysis.class).field("id").equal(id).get();
+		if (analysis != null) {
+			ds.delete(analysis);
+			return 0;
+		}
+		return 1;
+	}
+	
 }

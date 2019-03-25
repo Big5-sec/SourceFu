@@ -7,7 +7,8 @@
     <meta name="author" content="Nicolas Zilio">
     <link rel="stylesheet" href="/js/codemirror.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
-     <link href="test_css.css" rel="stylesheet">
+    <link href="/test_css.css" rel="stylesheet">
+         <link href="/js/merge.css" rel="stylesheet">
     <title>SourceFu</title>
   </head>
   <body>
@@ -15,31 +16,43 @@
       <a class="navbar-brand col-sm-3 col-md-2 ml-2" href="/">SourceFu</a>
     </nav>
     <main role="main" class="mt-4 ml-sm-5 mr-sm-5">
-      <ul class="nav nav-tabs" role="tablist">
+      <ul class="nav nav-tabs" role="tablist" id="maintabs">
         <li class="nav-item">
-          <a class="nav-link active" id="view-tab" data-toggle="tab" href="#view" role="tab" aria-controls="view" aria-selected="true">View</a>
+          <a class="nav-link active" id="view-tab" data-target="#view" data-toggle="tab" href="#view" role="tab" aria-controls="view" aria-selected="true">Overview</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="work-tab" data-toggle="tab" href="#work" role="tab" aria-controls="work" aria-selected="false">Work</a>
+          <a class="nav-link" id="work-tab" data-target="#work" data-toggle="tab" href="#work" role="tab" aria-controls="work" aria-selected="false">Work View</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="step-tab" data-toggle="tab" href="#steps" role="tab" aria-controls="steps" aria-selected="false">Steps</a>
+          <a class="nav-link" id="step-tab" data-target="#steps" data-toggle="tab" href="#steps" role="tab" aria-controls="steps" aria-selected="false">Diff View</a>
         </li>
       </ul>
 
       <div class="tab-content">
         <div id="view" class="tab-pane fade show active" role="tabpanel" aria-labelledby="view-tab">
           <h4>deobfuscated</h4>
-          <pre>$deobfuscated</pre>
+          <pre>
+            #if ( ! $deobfuscated )
+            not analyzed already..
+            #else
+            $deobfuscated
+            #end
+          </pre>
           <h4>original</h4>
           <pre>$original</pre>
         </div>
         <div id="work" class="tab-pane fade" role="tabpanel" aria-labelledby="work-tab">
-          <textarea id="workpane">$deobfuscated</textarea>
+          <pre>see</pre>
+          <textarea id="workpane">
+            #if ( ! $deobfuscated )
+            $original
+            #else
+            $deobfuscated
+            #end
+          </textarea>
         </div>
         <div id="steps" class="tab-pane fade" role="tabpanel" aria-labelledby="step-tab">
-          <h3>Menu 2</h3>
-          <p>Some content in menu 2.</p>
+          <div id="viewmerge"></div>
         </div>
       </div>
     </main>
@@ -47,8 +60,114 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"  crossorigin="anonymous"></script>
     <script src="/js/codemirror.js"></script>
+        <script src="/js/xml.js"></script>
+        <script src="/hehe_fichiers/diff_match_patch.js"></script>
+        <script src="/hehe_fichiers/merge.js"></script>
     <script>
-      var editor = CodeMirror.fromTextArea(document.getElementById("workpane"), {lineNumbers: true});
-    </script>
+      var mainEditor;
+      var mergeEditor;
+      function initMainCodeEditor(){
+      if(mainEditor instanceof CodeMirror){
+				mainEditor.refresh();
+		  } else {
+        // Load main editor
+        var el = document.getElementById("workpane");    
+        mainEditor = CodeMirror.fromTextArea(el, {
+          lineNumbers: true
+        });
+      }
+      }
+
+      $(document).ready(function(){
+        
+      // Only load editors if tab has been clicked
+      $('#maintabs > li > a[data-target="#work"]').on('shown.bs.tab', function(e){
+        initMainCodeEditor();
+      });
+
+       // Only load editors if tab has been clicked
+      $('#maintabs > li > a[data-target="#steps"]').on('shown.bs.tab', function(e){
+        see();
+      });
+        
+      // Remember tabs
+      /*var json, tabsState;
+      $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+        tabsState = localStorage.getItem("tabs-state");
+        json = JSON.parse(tabsState || "{}");
+        json[$(e.target).parents("ul.nav.nav-pills, ul.nav.nav-tabs").attr("id")] = $(e.target).data('target');
+
+        localStorage.setItem("tabs-state", JSON.stringify(json));
+      });
+
+      tabsState = localStorage.getItem("tabs-state");
+
+      json = JSON.parse(tabsState || "{}");
+      $.each(json, function(containerId, target) {
+        return $("#" + containerId + " a[data-target=" + target + "]").tab('show');
+      });
+
+      $("ul.nav.nav-pills, ul.nav.nav-tabs").each(function() {
+        var $this = $(this);
+        if (!json[$this.attr("id")]) {
+          return $this.find("a[data-toggle=tab]:first, a[data-toggle=pill]:first").tab("show");
+          }
+      });*/
+          
+    });
+             
+var value, orig1, orig2, dv, hilight= true;
+      function initUI(panes) {
+  if (value == null) return;
+  var target = document.getElementById("viewmerge");
+  target.innerHTML = "";
+  mergeEditor = CodeMirror.MergeView(target, {
+    value: value,
+    origLeft: panes == 3 ? orig1 : null,
+    orig: orig2,
+    lineNumbers: true,
+    mode: "text/html",
+    highlightDifferences: hilight
+      });
+      console.log(mergeEditor.constructor.name);
+}
+
+      function see() {
+      if( mergeEditor && mergeEditor !== "null" && mergeEditor !== "undefined" ){
+      return;
+		  } else {
+  value = document.documentElement.innerHTML;
+  orig1 = value.replace(/\.\.\//g, "codemirror/").replace("yellow", "orange");
+  orig2 = value.replace(/\u003cscript/g, "\u003cscript type=text/javascript ")
+    .replace("white", "purple;\n      font: comic sans;\n      text-decoration: underline;\n      height: 15em");
+  initUI(2);}
+};
+
+function mergeViewHeight(mergeView) {
+  function editorHeight(editor) {
+    if (!editor) return 0;
+    return editor.getScrollInfo().height;
+  }
+  return Math.max(editorHeight(mergeView.leftOriginal()),
+                  editorHeight(mergeView.editor()),
+                  editorHeight(mergeView.rightOriginal()));
+}
+
+function resize(mergeView) {
+  var height = mergeViewHeight(mergeView);
+  for(;;) {
+    if (mergeView.leftOriginal())
+      mergeView.leftOriginal().setSize(null, height);
+    mergeView.editor().setSize(null, height);
+    if (mergeView.rightOriginal())
+      mergeView.rightOriginal().setSize(null, height);
+
+    var newHeight = mergeViewHeight(mergeView);
+    if (newHeight >= height) break;
+    else height = newHeight;
+  }
+  mergeView.wrap.style.height = height + "px";
+}
+</script>
   </body>
 </html>

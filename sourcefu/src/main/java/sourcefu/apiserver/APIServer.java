@@ -25,13 +25,16 @@ public class APIServer {
                                 InputStream analysisLanguageStream = request.raw().getPart("analysislanguage").getInputStream();
                                 String analysisLanguage = IOUtils.toString(analysisLanguageStream);
                                 
+                                String analysisFilename = request.raw().getPart("analysisfile").getSubmittedFileName();
+                                System.out.println("this is the name: "+ analysisFilename);
+                                
                                 InputStream analysisFileStream = request.raw().getPart("analysisfile").getInputStream();
                                 String analysisData = IOUtils.toString(analysisFileStream);
                                 
-                                Analysis analysis = new Analysis(analysisName, analysisLanguage, analysisData);                                
+                                Analysis analysis = new Analysis(analysisName, analysisLanguage, analysisFilename, analysisData);                                
                                 int i = AnalysisController.createAnalysis(analysis);
                                 
-                                System.out.println(AnalysisController.getAnalyses());
+                                //System.out.println(AnalysisController.getAnalyses());
                                 
                                 if(i > 0) {
                                     response.type("application/json");
@@ -98,6 +101,19 @@ public class APIServer {
                                 //TODO
                                 return "OK";
                             });
+                        
+                        get("/delAnalysis/:analysisId", (request, response) -> {
+                        	String analysisId = request.params("analysisId");
+                        	int i = AnalysisController.deleteAnalysis(analysisId);
+                        	if(i == 0) {
+                        		response.type("application/json");
+                                return "{\"status\":\"OK\"}";
+                            } else {
+                        		response.type("application/json");
+                                return "{\"status\":\"FAIL\"}";
+                            }
+                        });
+                        
                     });
             });
     }

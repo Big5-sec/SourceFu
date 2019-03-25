@@ -11,7 +11,7 @@ public class Analysis {
 	private ObjectId id; //eheh mongodb don't do the autoincrement thing, so we need to do it by yourselves
 	private String name;
 	private String language;
-	private String filename = "coucou";
+	private String filename;
 	private String originalData;
 	private enum status {
 		unanalysed, ongoing, finished;
@@ -25,8 +25,9 @@ public class Analysis {
 		this.setLanguage(language);
 	}
 	
-	public Analysis(String name, String language, String originalData) {
+	public Analysis(String name, String language, String filename, String originalData) {
 		this(name,language);
+		this.filename = filename;
 		this.originalData = originalData;
 	}
 	
