@@ -17,22 +17,11 @@ public class WebServer {
     public WebServer () {
     	staticFiles.location("/public");
         get("/", (req, res) -> renderHomePage());
-        get("/hehe", (req, res) -> renderHehePage());
         get("/newAnalysis", (req, res) -> renderNewAnalysisPage());
         get("/editAnalysis/:analysisId", (req, res) -> renderEditAnalysis());//Integer.parseInt(req.params("analysisId"))));
         get("/workAnalysis/:analysisId", (req, res) -> renderWorkAnalysis(req.params("analysisId")));//Integer.parseInt(req.params("analysisId"))));
-//    }
     	APIServer apiServer = new APIServer();
-    	
-    	//get("/", (req, res) -> { return "welcome";});
     }
-
-
- 	private Object renderHehePage() {
-        Map<String, Object> model = new HashMap<>();
-        return renderTemplate("templates/hehe.vm",model);
-	}
-
 
 	private static String renderTemplate(String template, Map model) {
         return new VelocityTemplateEngine().render(new ModelAndView(model, template));
@@ -56,7 +45,6 @@ public class WebServer {
 
     private static String renderWorkAnalysis(String analysisId){
         Map<String, Object> model = new HashMap<>();
-        System.out.println("this is analysisId : "+ analysisId);
         String originalData = AnalysisController.getOriginalData(analysisId);
         model.put("original", originalData);
         return renderTemplate(WebUtils.Templates.WORKANALYSIS,model);

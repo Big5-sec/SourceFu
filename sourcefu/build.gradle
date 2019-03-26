@@ -43,6 +43,8 @@ dependencies {
 		
 	//ST 
 	compile group: 'org.antlr', name: 'stringtemplate', version: '4.0.2'
+	
+	compile group: 'org.abego.treelayout', name: 'org.abego.treelayout.core', version: '1.0.3'
 }
 
 
@@ -63,9 +65,15 @@ task fatJar(type: Jar) {
         	'Implementation-Version': version,
         	'Main-Class': 'SourceFu'
     }
-    baseName = project.name + '-all'
+    baseName = project.name + '-dev'
     from(configurations.compile.collect { it.isDirectory() ? it : zipTree(it) })
     with jar
 }
 
+task copyJar(type: Copy) {
+    from jar // here it automatically reads jar file produced from jar task
+    into '../jar/'
+}
+
+build.dependsOn copyJar
 //mainClassName = 'SourceFu'

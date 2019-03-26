@@ -26,7 +26,6 @@ public class APIServer {
                                 String analysisLanguage = IOUtils.toString(analysisLanguageStream);
                                 
                                 String analysisFilename = request.raw().getPart("analysisfile").getSubmittedFileName();
-                                System.out.println("this is the name: "+ analysisFilename);
                                 
                                 InputStream analysisFileStream = request.raw().getPart("analysisfile").getInputStream();
                                 String analysisData = IOUtils.toString(analysisFileStream);

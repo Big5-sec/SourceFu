@@ -105,7 +105,7 @@ public class JSMain {
 	}
 	//the actual function doing smthing
 	public void run() {
-		
+		System.out.println("[+] running deobfuscation");
 		//ParseTree tree = generateTree(this.input);
 		
 		if((this.doBeautify || this.doComments ||                       //in the case no options are selected, that means that
@@ -258,7 +258,7 @@ public class JSMain {
 		if(this.temp_data==null) {
 			this.temp_data = this.initial_data;
 		}
-		
+		*/
 		if(this.doBeautify) {
 			CharStream input = getCharStreamFromData(this.temp_data);
 			CommonTokenStream tokens = generateTokens(input);
@@ -267,7 +267,11 @@ public class JSMain {
 //			VBABeautifier beautifier = new VBABeautifier(tokens);
 //			walker.walk(beautifier, tree);
 //			this.temp_data = beautifier.getdata();
-		}*/
+			JSBeautifier beautifier = new JSBeautifier(tokens);
+			walker.walk(beautifier, tree);
+			this.temp_data = beautifier.getdata();
+		}
+		showTree();
 		this.final_data = this.temp_data;
 	}
 	
