@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStreamRewriter;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 import sourcefu.JS.antlr.JavaScriptParser;
 import sourcefu.JS.antlr.JavaScriptParserBaseListener;
@@ -53,8 +54,8 @@ public class JSBeautifier extends JavaScriptParserBaseListener{
 	}
 	
 	public void exitFunctionBody(JavaScriptParser.FunctionBodyContext ctx) {
-		rewriter.insertAfter(ctx.stop.getTokenIndex(), "\n");
 		this.IndentLevel -=1;
+		rewriter.insertAfter(ctx.stop.getTokenIndex(), getIndentation());
 	}
 	
 	public void enterMethodDefinition(JavaScriptParser.MethodDefinitionContext ctx) {
@@ -72,6 +73,13 @@ public class JSBeautifier extends JavaScriptParserBaseListener{
 	public void exitEos(JavaScriptParser.EosContext ctx) {
 		//rewriter.replace(ctx.start.getTokenIndex(),ctx.stop.getTokenIndex(), ctx.getText()+"\n");
 		rewriter.insertAfter(ctx.stop.getTokenIndex(), "\n");
+	}
+	
+	public void exitBlock(JavaScriptParser.BlockContext ctx) {
+		System.out.println("last child : "+ ctx.getChild(ctx.getChildCount()-1).getClass());
+		TerminalNodeImpl term = (TerminalNodeImpl)(ctx.getChild(ctx.getChildCount()-1));
+		rewriter.insertBefore(term.getSymbol().getTokenIndex(), getIndentation());
+		rewriter.insertAfter(term.getSymbol().getTokenIndex(), "\n");
 	}
 	
 	private String getIndentation() {

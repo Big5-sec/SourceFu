@@ -37,17 +37,10 @@ public class APIServer {
                                 
                                 if(i > 0) {
                                     response.type("application/json");
-                                    return "{\"upload\":\"OK\"}";
-//                                    response.status(200);
-//                                    response.put("code", 200);
-//                                    response.put("status", "Account Creation Successful! Proceed to Login");
+                                    return "{\"status\":\"OK\"}";
                                 } else {
                                     response.type("application/json");
-                                    return "{\"upload\":\"FAIL\"}";
-//                                    logger.error("ERROR! Unable to create User " + user.toString());
-//                                    response.put("code", "401");
-//                                    response.put("status", "ERROR! username/email exists already!");
-//                                    res.status(401);
+                                    return "{\"status\":\"FAIL\"}";
                                 }
                             });
                         /*
