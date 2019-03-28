@@ -87,7 +87,7 @@ public class JSMain {
 	
 	public ParseTree generateTree(CommonTokenStream tokens) {
 		JavaScriptParser parser = new JavaScriptParser(tokens);
-		parser.setErrorHandler(new DefaultErrorStrategy());
+		//parser.setErrorHandler(new DefaultErrorStrategy());
 		ParseTree tree = parser.program();
 		return tree;
 	}
@@ -129,6 +129,9 @@ public class JSMain {
 		 * 4) do the rename
 		 * 5) do the beautify
 		 */
+		this.temp_data = this.initial_data;
+		showTree();
+		
 		if(this.doComments) {
 			CharStream input = getCharStreamFromData(this.initial_data);
 			CommonTokenStream tokens = generateTokens(input);
@@ -243,22 +246,22 @@ public class JSMain {
 				System.out.println(this.temp_data);
 			}
 		}
-		
+		*/
 		if(this.doRename) {
 			CharStream input = getCharStreamFromData(this.temp_data);
 			CommonTokenStream tokens = generateTokens(input);
 			ParseTree tree = generateTree(tokens);
 			ParseTreeWalker walker = new ParseTreeWalker();
-//			VBARenamer renamer = new VBARenamer(tokens);
-//			walker.walk(renamer, tree);
-//			renamer.rename();
-//			this.temp_data = renamer.getdata();
+			JSRenamer renamer = new JSRenamer(tokens);
+			walker.walk(renamer, tree);
+			renamer.rename();
+			this.temp_data = renamer.getdata();
 		}
 		
 		if(this.temp_data==null) {
 			this.temp_data = this.initial_data;
 		}
-		*/
+		
 		if(this.doBeautify) {
 			CharStream input = getCharStreamFromData(this.temp_data);
 			CommonTokenStream tokens = generateTokens(input);
@@ -271,7 +274,7 @@ public class JSMain {
 			walker.walk(beautifier, tree);
 			this.temp_data = beautifier.getdata();
 		}
-		showTree();
+		//showTree();
 		this.final_data = this.temp_data;
 	}
 	

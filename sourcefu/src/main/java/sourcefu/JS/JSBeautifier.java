@@ -17,10 +17,12 @@ public class JSBeautifier extends JavaScriptParserBaseListener{
 	TokenStreamRewriter rewriter;
 	Integer IndentLevel;
 	JSBeautifyRewriterController rewriterController = new JSBeautifyRewriterController();
+	CommonTokenStream tokens;
 	
 	public JSBeautifier(CommonTokenStream tokens) {
 		rewriter = new TokenStreamRewriter(tokens);
 		this.IndentLevel = 0;
+		this.tokens=tokens;
 	}
 	
 	public void enterStatementList(JavaScriptParser.StatementListContext ctx) {
@@ -71,8 +73,14 @@ public class JSBeautifier extends JavaScriptParserBaseListener{
 	}
 	
 	public void exitEos(JavaScriptParser.EosContext ctx) {
+		/*if (ctx.stop.getTokenIndex()+1 >= this.tokens.getTokens().size()) {
+			return;
+		}
 		//rewriter.replace(ctx.start.getTokenIndex(),ctx.stop.getTokenIndex(), ctx.getText()+"\n");
-		rewriter.insertAfter(ctx.stop.getTokenIndex(), "\n");
+		String nextTokenStr = this.tokens.get(ctx.stop.getTokenIndex()+1).getText();
+		if(!nextTokenStr.contains("\n")) {
+			rewriter.replace(ctx.start.getTokenIndex(),ctx.stop.getTokenIndex(), ctx.getText()+"\n");
+		}*/
 	}
 	
 	public void exitBlock(JavaScriptParser.BlockContext ctx) {

@@ -2,9 +2,15 @@ package sourcefu.apiserver;
 import static spark.Spark.*;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.MultipartConfigElement;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import sourcefu.VBA.helpers.VBAAPIUtils;
 import sourcefu.database.Analysis;
 import sourcefu.database.AnalysisController;
 import spark.utils.IOUtils;
@@ -67,33 +73,7 @@ public class APIServer {
                                 //TODO
                                 return "OK";
                             });
-                        
-                        put("/launchCommand/:analysisId/:stepId/:commandId", (request, response) -> {
-                                //TODO
-                                return "OK";
-                            });
-
-                        get("/LastCommandStatus/:analysisId", (request, response) -> {
-                                //TODO
-                                return "OK";
-                            });
-
-                        get("/LastCommandResult/:analysisId", (request, response) -> {
-                                //TODO
-                                return "OK";
-                            });
-
-                        get("/analysisStatus/:analysisId", (request, response) -> {
-                                //TODO
-                                return "OK";
-                            });
-
-                        
-                        put("setDeobfuscated/:analysisId", (request, response) -> {
-                                //TODO
-                                return "OK";
-                            });
-                        
+                                               
                         get("/delAnalysis/:analysisId", (request, response) -> {
                         	String analysisId = request.params("analysisId");
                         	int i = AnalysisController.deleteAnalysis(analysisId);
@@ -107,6 +87,28 @@ public class APIServer {
                         });
                         
                     });
+                path("/actions", () -> {
+                	post("/deleteComments", (request, response) -> {
+                		request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"));
+                        InputStream inputStream = request.raw().getPart("input").getInputStream();
+                        String input = IOUtils.toString(inputStream);
+                        VBAAPIUtils api = new VBAAPIUtils();
+                        String data = api.APIDeleteComments(input);
+                        
+                        if(data != null) {
+                        	Map<String, String> output = new HashMap<String, String>();
+                        	output.put("status", "OK");
+                        	output.put("output",data);
+                        	GsonBuilder builder = new GsonBuilder();
+                        	Gson gson = builder.create();
+                        	String json = gson.toJson(output);
+                        	return json;
+                        } else {
+                        	return "{\"status\":\"FAIL\",\"output\":\"\"}"; 
+                        }
+                        
+                	});
+                });   
             });
     }
 }
