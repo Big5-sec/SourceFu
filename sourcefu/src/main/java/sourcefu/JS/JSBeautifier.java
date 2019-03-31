@@ -1,5 +1,6 @@
 package sourcefu.JS;
 
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -13,11 +14,12 @@ import sourcefu.VBA.antlr.VBAParser;
 import sourcefu.VBA.partialevaluator.RewriteOperation;
 
 public class JSBeautifier extends JavaScriptParserBaseListener{
-	
+	//actually we will need two passes
 	TokenStreamRewriter rewriter;
 	Integer IndentLevel;
 	JSBeautifyRewriterController rewriterController = new JSBeautifyRewriterController();
 	CommonTokenStream tokens;
+	boolean avoidStatementIndent=false;
 	
 	public JSBeautifier(CommonTokenStream tokens) {
 		rewriter = new TokenStreamRewriter(tokens);
@@ -36,10 +38,27 @@ public class JSBeautifier extends JavaScriptParserBaseListener{
 	}
 
 	public void enterStatement(JavaScriptParser.StatementContext ctx) {
+		if(this.avoidStatementIndent) {
+			this.avoidStatementIndent = false;
+			return;
+		}
 		JSBeautifyRewriteOperation op = new JSBeautifyRewriteOperation(ctx.start.getTokenIndex(), getIndentation());
 		rewriterController.addRewriteOperation(op);
 	}
 	
+	public void enterWhileStatement(JavaScriptParser.WhileStatementContext ctx) {
+		this.avoidStatementIndent = true;
+	}
+	
+	public void enterIfStatement(JavaScriptParser.IfStatementContext ctx) {
+		this.avoidStatementIndent = true;
+	}
+	
+	public void enterElseStatement(JavaScriptParser.ElseStatementContext ctx) {
+		JSBeautifyRewriteOperation op = new JSBeautifyRewriteOperation(ctx.start.getTokenIndex(), getIndentation());
+		rewriterController.addRewriteOperation(op);
+		this.avoidStatementIndent = true;
+	}
 	/*public void enterFunctionDeclaration(JavaScriptParser.FunctionDeclarationContext ctx) {
 		rewriter.insertBefore(ctx.functionBody().start.getTokenIndex(), "\n");
 	}
@@ -73,18 +92,10 @@ public class JSBeautifier extends JavaScriptParserBaseListener{
 	}
 	
 	public void exitEos(JavaScriptParser.EosContext ctx) {
-		/*if (ctx.stop.getTokenIndex()+1 >= this.tokens.getTokens().size()) {
-			return;
-		}
-		//rewriter.replace(ctx.start.getTokenIndex(),ctx.stop.getTokenIndex(), ctx.getText()+"\n");
-		String nextTokenStr = this.tokens.get(ctx.stop.getTokenIndex()+1).getText();
-		if(!nextTokenStr.contains("\n")) {
-			rewriter.replace(ctx.start.getTokenIndex(),ctx.stop.getTokenIndex(), ctx.getText()+"\n");
-		}*/
+		rewriter.insertAfter(ctx.stop.getTokenIndex(),"\n");
 	}
 	
 	public void exitBlock(JavaScriptParser.BlockContext ctx) {
-		System.out.println("last child : "+ ctx.getChild(ctx.getChildCount()-1).getClass());
 		TerminalNodeImpl term = (TerminalNodeImpl)(ctx.getChild(ctx.getChildCount()-1));
 		rewriter.insertBefore(term.getSymbol().getTokenIndex(), getIndentation());
 		rewriter.insertAfter(term.getSymbol().getTokenIndex(), "\n");

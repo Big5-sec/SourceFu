@@ -26,7 +26,7 @@ public class JSCommentsDeleter extends JavaScriptParserBaseListener{
 			for(Token token : tokens) {
 				if (token.getChannel()==1) {
 					//System.out.println("token : "+ token.getText() + ": type : "+ String.valueOf(token.getType()));
-					if(token.getType() == 2) { //if the token is a comment
+					if(token.getType() == 2 || token.getType()==1) { //if the token is a comment
 						rewriter.delete(token.getTokenIndex());
 					}
 				}

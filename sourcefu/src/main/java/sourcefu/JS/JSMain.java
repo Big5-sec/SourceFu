@@ -265,14 +265,18 @@ public class JSMain {
 		if(this.doBeautify) {
 			CharStream input = getCharStreamFromData(this.temp_data);
 			CommonTokenStream tokens = generateTokens(input);
-			ParseTree tree = generateTree(tokens);
+			ParseTree tree = generateTree(tokens);		
+			JSBeautifierUtils jsbtyutils = new JSBeautifierUtils(tokens);
+			jsbtyutils.removeUselessTokens();
+			this.temp_data = jsbtyutils.getdata();
+			CharStream input2 = getCharStreamFromData(this.temp_data);
+			CommonTokenStream tokens2 = generateTokens(input2);
+			ParseTree tree2 = generateTree(tokens2);
 			ParseTreeWalker walker = new ParseTreeWalker();
-//			VBABeautifier beautifier = new VBABeautifier(tokens);
-//			walker.walk(beautifier, tree);
-//			this.temp_data = beautifier.getdata();
-			JSBeautifier beautifier = new JSBeautifier(tokens);
-			walker.walk(beautifier, tree);
+			JSBeautifier beautifier = new JSBeautifier(tokens2);
+			walker.walk(beautifier, tree2);
 			this.temp_data = beautifier.getdata();
+			
 		}
 		//showTree();
 		this.final_data = this.temp_data;

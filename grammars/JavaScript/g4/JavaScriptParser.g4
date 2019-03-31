@@ -91,9 +91,12 @@ expressionStatement
     ;
 
 ifStatement
-    : If '(' expressionSequence ')' statement (Else statement)?
+    : If '(' expressionSequence ')' statement (elseStatement)?
     ;
 
+elseStatement
+    : Else statement
+    ;
 
 iterationStatement
     : Do statement While '(' expressionSequence ')' eos                                                         # DoStatement

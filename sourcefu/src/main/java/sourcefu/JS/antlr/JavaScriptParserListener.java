@@ -119,6 +119,16 @@ public interface JavaScriptParserListener extends ParseTreeListener {
 	 */
 	void exitIfStatement(JavaScriptParser.IfStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link JavaScriptParser#elseStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterElseStatement(JavaScriptParser.ElseStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JavaScriptParser#elseStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseStatement(JavaScriptParser.ElseStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code DoStatement}
 	 * labeled alternative in {@link JavaScriptParser#iterationStatement}.
 	 * @param ctx the parse tree

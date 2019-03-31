@@ -262,11 +262,11 @@ public class SourceFu {
 		//commandLine.addSubcommand("graphical", new GraphicalSourceFu());
 		//List<CommandLine> parsed = commandLine.parse(args);
 		//handleParseResult(parsed);
-		try {
+		//try {
 			commandLine.parseWithHandler(new RunLast(), System.err, args);
-		} catch (Exception e) {
+		/*} catch (Exception e) {
 			System.out.println("Invalid command specified. Please use --help.");
-		}
+		}*/
 		//commandLine.parseWithHandler(new RunLast(), System.err, args);
 	}
 }

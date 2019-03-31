@@ -73,9 +73,9 @@ task fatJar(type: Jar) {
 }
 
 task copyJar(type: Copy) {
-    from jar // here it automatically reads jar file produced from jar task
+    from fatJar // here it automatically reads jar file produced from jar task
     into '../jar/'
 }
 
-build.dependsOn copyJar
+//build.dependsOn copyJar
 //mainClassName = 'SourceFu'
