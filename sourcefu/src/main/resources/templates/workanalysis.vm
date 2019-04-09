@@ -6,12 +6,14 @@
     <meta name="description" content="">
     <meta name="author" content="Nicolas Zilio">
     <link rel="stylesheet" href="/js/codemirror.css">
+    <link rel="stylesheet" href="/material.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     <link href="/test_css.css" rel="stylesheet">
-         <link href="/js/merge.css" rel="stylesheet">
+    <link href="/js/merge.css" rel="stylesheet">
+    <link href="/js/prism.css" rel="stylesheet">
     <title>SourceFu</title>
   </head>
-  <body>
+  <body style="font-size:0.8rem">
     <nav class="navbar navbar-dark static-top bg-dark p-0 flex-md-nowrap">
       <a class="navbar-brand col-sm-3 col-md-2 ml-2" href="/">SourceFu</a>
     </nav>
@@ -30,27 +32,41 @@
 
       <div class="tab-content">
         <div id="view" class="tab-pane fade show active" role="tabpanel" aria-labelledby="view-tab">
+          <br>
           <h4>deobfuscated</h4>
-          <pre>
-            #if ( ! $deobfuscated )
-            not analyzed already..
-            #else
-            $deobfuscated
-            #end
-          </pre>
+          #if ( ! $deobfuscated )
+          <pre><code class="language-javascript">not analyzed already..</code></pre>
+          #else
+          <pre class="pre-scrollable line-numbers"><code class="language-javascript">$deobfuscated</code></pre>
+         #end
           <h4>original</h4>
-          <pre>$original</pre>
+          <pre class="pre-scrollable line-numbers"><code class="language-javascript">$original</code></pre>
         </div>
         <div id="work" class="tab-pane fade" role="tabpanel" aria-labelledby="work-tab">
-          <pre>see</pre>
-          <textarea id="workpane">
-            #if ( ! $deobfuscated )
-            $original
+          <div class="float-left">
+            #if (! $steps)
+              <a href="#">load step</a>
             #else
-            $deobfuscated
+              <select>
+                #foreach ($step in $steps)
+                <option>$step</option>
+                #end
+              </select>
+              <a href="#">load step</a>
             #end
-          </textarea>
-         
+          </div>
+          <div class="float-right">
+            <textarea></textarea>
+            <a href="#">new step</a>
+          </div>
+
+          #if ( ! $deobfuscated )
+          <textarea id="workpane" >$original</textarea>
+          #else
+          <textarea id="workpane">$deobfuscated</textarea>
+          #end
+          <br>
+          
           <h4>operations</h4>
           <ul class="nav nav-pills" id="pills-tab" role="tablist">
             <li class="nav-item">
@@ -74,21 +90,22 @@
               
             </div>
             <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">...</div>
+            <div id="output123"></div>
           </div>
         </div>
         <div id="steps" class="tab-pane fade" role="tabpanel" aria-labelledby="step-tab">
           <div id="viewmerge"></div>
         </div>
       </div>
-      <div id="output123"></div>
     </main>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"  crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"  crossorigin="anonymous"></script>
     <script src="/js/codemirror.js"></script>
-        <script src="/js/xml.js"></script>
-        <script src="/hehe_fichiers/diff_match_patch.js"></script>
-        <script src="/hehe_fichiers/merge.js"></script>
+    <script src="/js/prism.js"></script>
+    <script src="/js/xml.js"></script>
+    <script src="/hehe_fichiers/diff_match_patch.js"></script>
+    <script src="/hehe_fichiers/merge.js"></script>
     <script>
       var mainEditor;
       var mergeEditor;
@@ -99,8 +116,10 @@
         // Load main editor
         var el = document.getElementById("workpane");    
         mainEditor = CodeMirror.fromTextArea(el, {
-          lineNumbers: true
-        });
+          lineNumbers: true,
+          theme: "material"
+      });
+      mainEditor.setSize("100%",$(window).height()/2);
       }
       }
 
@@ -114,32 +133,7 @@
        // Only load editors if tab has been clicked
       $('#maintabs > li > a[data-target="#steps"]').on('shown.bs.tab', function(e){
         see();
-      });
-        
-      // Remember tabs
-      /*var json, tabsState;
-      $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
-        tabsState = localStorage.getItem("tabs-state");
-        json = JSON.parse(tabsState || "{}");
-        json[$(e.target).parents("ul.nav.nav-pills, ul.nav.nav-tabs").attr("id")] = $(e.target).data('target');
-
-        localStorage.setItem("tabs-state", JSON.stringify(json));
-      });
-
-      tabsState = localStorage.getItem("tabs-state");
-
-      json = JSON.parse(tabsState || "{}");
-      $.each(json, function(containerId, target) {
-        return $("#" + containerId + " a[data-target=" + target + "]").tab('show');
-      });
-
-      $("ul.nav.nav-pills, ul.nav.nav-tabs").each(function() {
-        var $this = $(this);
-        if (!json[$this.attr("id")]) {
-          return $this.find("a[data-toggle=tab]:first, a[data-toggle=pill]:first").tab("show");
-          }
-      });*/
-          
+      }) 
     });
              
 var value, orig1, orig2, dv, hilight= true;

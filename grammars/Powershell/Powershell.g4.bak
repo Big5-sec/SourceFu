@@ -2,18 +2,14 @@
 /* https://github.com/PowerShell/PowerShell/blob/037e12eddc850393d2538a26abad4a67e048a989/src/System.Management.Automation/engine/parser/Parser.cs#L766
 */
 
-grammar Powershell;
-
-
-startRule: (pipeline statementTerminators)* EOF;
-    
-/*        
+grammar Powershell;    
+        
 startRule : scriptBlock EOF;
 
 scriptBlock :
-    //usingStatements?
-    //paramBlock?
-    //statementTerminators?
+    usingStatements?
+    paramBlock?
+    statementTerminators?
     scriptBlockBody?
 ;
 
@@ -93,17 +89,17 @@ namedBlock : statementTerminators? blockName statementBlock;
 
 statementBlock : NEWLINES? '{' statementList? NEWLINES? '}';
 
-statementList : (statement STATEMENTTERMINATOR)*;
+statementList : statement+;
 
 statement :
-    ifStatement 
+    ifStatement
     | LABEL? labeledStatement
     | functionStatement
-    | flowControlStatement 
+    | flowControlStatement STATEMENTTERMINATOR
     | trapStatement
     | tryStatement
     | dataStatement
-    | pipeline
+    | pipeline STATEMENTTERMINATOR
 ;
 
 labeledStatement :
@@ -124,12 +120,12 @@ flowControlStatement :
 
 labelExpression :
     SIMPLENAME
-    | expression
+    | unaryExpression
 ;
 
 keyExpression :
     SIMPLENAME
-    | expression
+    | unaryExpression
 ;
 
 //blockStatement : keyword statementBlock;
@@ -163,7 +159,7 @@ switchCondition :
 
 switchFilename :
     commandArgument
-    | expression
+    | primaryExpression
 ;
 
 switchBody : NEWLINES? '{' NEWLINES? switchClauses '}';
@@ -174,12 +170,12 @@ switchClause : switchClauseCondition statementBlock statementTerminators?;
 
 switchClauseCondition :
     commandArgument
-    | expression
+    | primaryExpression
 ;
 
 configurationStatement : 'configuration' NEWLINES? singleNameExpression NEWLINES? statementBlock;
 
-singleNameExpression : commandArgument | expression;
+singleNameExpression : commandArgument | primaryExpression;
 
 foreachStatement :
     'foreach' NEWLINES? foreachParameters? NEWLINES? '(' NEWLINES? VARIABLE NEWLINES? 'in' NEWLINES? pipeline NEWLINES? ')' statementBlock;
@@ -193,7 +189,7 @@ foreachParameter :
 
 foreachThrottleLimit :
     commandArgument
-    | expression
+    | primaryExpression
 ;
 
 forStatement :
@@ -307,15 +303,14 @@ dataCommandsAllowed : NEWLINES? '-suportedcommand' dataCommandsList;
 dataCommandsList : NEWLINES? dataCommand (',' NEWLINES? dataCommand)*;
 
 dataCommand : commandNameExpr;
-*/
+
 pipeline :
     assignmentExpression
-    | command pipelineTail?
     | expression redirections? pipelineTail?
+    | command pipelineTail?
 ;    
             
-//assignmentExpression : expression ASSIGNMENTOPERATOR statement;
-assignmentExpression : expression ASSIGNMENTOPERATOR expression;    
+assignmentExpression : expression ASSIGNMENTOPERATOR statement;
 
 pipelineTail : ('|' NEWLINES? command)+;
 
@@ -328,74 +323,133 @@ redirection :
 
 redirectedFileName :
     commandArgument
-    | expression
+    | primaryExpression
 ;
 
 command :
-    commandName commandElement*
-    | commandInvocationOperator commandModule? commandNameExpr commandElement*
+    commandName commandElements?
+    | commandInvocationOperator commandModule? commandNameExpr commandElements?
 ;
 
 commandInvocationOperator : '&' | '.';
 
-commandModule : expression;
+commandModule : primaryExpression;
 
 commandName :
-    //genericTokenWithSubExpr
-    genericToken
+    genericTokenWithSubExpr
+    | genericToken
 ;
 
-//genericTokenWithSubExpr : GENERICTOKENWITHSUBEXPRSTART statementList? ')' commandName;
+genericTokenWithSubExpr : GENERICTOKENWITHSUBEXPRSTART statementList? ')' commandName;
 
 genericToken : SIMPLENAME;    
 
 commandNameExpr :
     commandName
-    | expression
+    | primaryExpression
 ;
 
+commandElements : commandElement+ ;
+
 commandElement :
-    commandNameExpr
+    COMMANDPARAMETER
+    | commandArgument
     | redirection
-    | COMMANDPARAMETER
 ;
 
   
 commandArgument : commandNameExpr;
 
-expression
-    : expression '.' expression                           #memberAccessExpression
-    | expression '::' expression                          #memberClassAccessExpression
-    | expression '[' NEWLINES? expression NEWLINES? ']'   #elementAccessExpre
-    | TYPELITERAL expression                              #castExpression
-    | '-join' NEWLINES? expression                        #joinExpression
-    | '-split' NEWLINES? expression                       #splitExpression
-    | '++' expression                                     #preIncrementExpression
-    | '--' expression                                     #preDecrementExpression
-    | '+' expression                                      #unaryPlusExpression
-    | '-' expression                                      #unaryMinusExpression
-    | ('-not'| '-bnot') NEWLINES? expression              #notExpression
-    | '!' expression                                      #notexclamExpression
-    | expression '..' NEWLINES? expression                #rangeExpression
-    | expression '-f' NEWLINES? expression                #formatExpression
-    | expression ('*' | '/' | '%') NEWLINES? expression   #multiplicativeExpression
-    | expression ('+'|'-') NEWLINES? expression           #additiveExpression
-    | expression comparisonOperator NEWLINES? expression  #comparisonExpression
-    | expression '-bxor' NEWLINES? expression             #bxorExpression    
-    | expression '-bor' NEWLINES? expression              #borExpression
-    | expression '-band' NEWLINES? expression             #bandExpression
-    | expression '-xor' NEWLINES? expression              #xorExpression    
-    | expression '-or' NEWLINES? expression               #orExpression
-    | expression '-and' NEWLINES? expression              #andExpression 
-    | value                                               #valueExpression
-    //| arrayExpression                                     #arrayLiteralExpression
-    //| subExpression                                       #subLiteralExpression
-    //| scriptBlockExpression                               #scriptBlockLiteralExpression
-    //| hashExpression                                      #hashLiteralExpression  => todo in future
-    //| parenthesizedExpression                             #parenthesisExpression
+expression : logicalExpression;
+
+logicalExpression :
+    logicalExpression '-and' NEWLINES? bitwiseExpression
+    | logicalExpression '-or' NEWLINES? bitwiseExpression
+    | logicalExpression '-xor' NEWLINES? bitwiseExpression
+    | bitwiseExpression
+;
+
+bitwiseExpression :
+    bitwiseExpression '-band' NEWLINES? comparisonExpression
+    | bitwiseExpression '-bor' NEWLINES? comparisonExpression
+    | bitwiseExpression '-bxor' NEWLINES? comparisonExpression
+    | comparisonExpression
+;
+
+comparisonExpression :
+    comparisonExpression comparisonOperator NEWLINES? additiveExpression
+    | additiveExpression
+;
+
+additiveExpression :
+    additiveExpression '+' NEWLINES? multiplicativeExpression
+    | additiveExpression '-' NEWLINES? multiplicativeExpression
+    | multiplicativeExpression
+;    
+
+multiplicativeExpression :
+    multiplicativeExpression '*' NEWLINES? formatExpression
+    | multiplicativeExpression '/' NEWLINES? formatExpression
+    | multiplicativeExpression '%' NEWLINES? formatExpression
+    | formatExpression
+;
+
+formatExpression :
+    formatExpression FORMATOPERATOR NEWLINES? rangeExpression
+    | rangeExpression
+;
+
+rangeExpression :
+    rangeExpression '..' NEWLINES? arrayLiteralExpression
+    | arrayLiteralExpression
+;
+
+arrayLiteralExpression :
+    unaryExpression ',' NEWLINES? arrayLiteralExpression
+    | unaryExpression
     ;
 
-value :
+unaryExpression :
+    primaryExpression
+    | expressionWithUnaryOperator
+    ;
+
+expressionWithUnaryOperator :
+    ',' NEWLINES? unaryExpression
+    | '-not' NEWLINES? unaryExpression
+    | '!' NEWLINES? unaryExpression
+    | '-bnot' NEWLINES? unaryExpression
+    | '+' NEWLINES? unaryExpression
+    | '-' NEWLINES? unaryExpression
+    | preIncrementExpression
+    | preDecrementExpression
+    | castExpression
+    | '-split' NEWLINES? unaryExpression
+    | '-join' NEWLINES? unaryExpression
+;
+
+preIncrementExpression : '++' NEWLINES? unaryExpression;
+
+preDecrementExpression : '--' NEWLINES? unaryExpression;
+
+castExpression : TYPELITERAL unaryExpression;
+
+/* what about : | invocationExpression*/
+primaryExpression :
+    VALUE #valueExpr
+    | primaryExpression '.' primaryExpression #memberAccessExpr
+    | primaryExpression '::' primaryExpression #memberclassAccessExpr
+    | primaryExpression '[' NEWLINES? expression NEWLINES? ']' #elementAccessExpr
+   // | NEWLINES? expression '--' #postIncrementExpr
+   // | NEWLINES? primaryExpression '++' #postDecrementExpr
+    | parenthesizedExpression #parenthesizedExpr
+    | subExpression #subExpr
+    | arrayExpression #arrayExpr 
+    | scriptBlockExpression #scriptBlockExpr
+    | hashLiteralExpression #hashliteralExpr
+;
+
+VALUE :
     SIMPLENAME
     | STRINGLITERAL
     | STRINGLITERALWITHSUBEXPRESSION
@@ -404,16 +458,15 @@ value :
     | VARIABLE
 ;                        
 
-/*    
 hashtable : hashLiteralExpression;    
     
 hashLiteralExpression :
     '@{' NEWLINES? hashLiteralBody? NEWLINES? '}' ;
-*/
-//hashLiteralBody : hashEntry (statementTerminators hashEntry)* ;
+
+hashLiteralBody : hashEntry (statementTerminators hashEntry)* ;
 
 statementTerminators : STATEMENTTERMINATOR+ ;
-/*
+
 hashEntry : keyExpression '=' NEWLINES? statement;
 
 scriptBlockExpression : '{' NEWLINES? scriptBlock NEWLINES? '}';
@@ -423,33 +476,48 @@ arrayExpression : '@(' NEWLINES? statementList? NEWLINES? ')';
 subExpression : '$(' NEWLINES? statementList? NEWLINES? ')';
 
 parenthesizedExpression : '(' NEWLINES? pipeline NEWLINES? ')' ;
-*/
+
 memberName :
     SIMPLENAME
     | STRINGLITERAL
     | STRINGLITERALWITHSUBEXPRESSION
+    /*| expressionWithUnaryOperator*/
+    /*| primaryExpression*/
 ;
 
+/*memberAccess :
+    primaryExpression '.' memberName
+    | primaryExpression '::' memberName
+;
+*/
+//invocationExpression : targetExpression memberName invokeParamList;
+
+//targetExpression : expression;
+
+/*invokeParamList :
+    '(' invokeParamParentList
+    | scriptBlock
+;
+
+invokeParamParentList : scriptBlock ')';
+*/  
 argumentList : '(' argumentExpressionList? NEWLINES? ')';
 
 argumentExpressionList : argumentExpression (NEWLINES? ',' argumentExpression)* ;
 
 argumentExpression : expression (',' expression)*;
 
+//elementAccess : primaryExpression '[' NEWLINES? expression NEWLINES? ']';
+
+
 blockName : ('dynamicparam' | 'begin' | 'process' | 'end');
                     
 
-
+//lexer rule
 
 comparisonOperator:
     DEQ | DNE | DGE | DGT | DLT | DLE | DIEQ | DINE | DIGE | DIGT | DILT | DILE | DCEQ | DCNE | DCGE |DCGT | DCLT | CLE | DLIKE | DNOTLIKE | DMATCH | DNOTMATCH | DILIKE | DINOTLIKE | DIMATCH | DINOTMATCH | DCLIKE | DCNOTLIKE | DCMATCH | DCNOTMATCH | DCONTAINS | DNOTCONTAINS | DICONTAINS | DINOTCONTAINS | DCCONTAINS | DCNOTCONTAINS | DISNOT | DIS | DAS | DREPLACE | DIREPLACE | DCREPLACE;
 
-//lexer rule
-
-MultiLineComment:               '<#' .*? '#>'             -> channel(HIDDEN);
-SingleLineComment:              '#' ~[\r\n]* -> channel(HIDDEN);
-WhiteSpaces:                    [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
-           
 ASSIGNMENTOPERATOR : '=' | '+=' | '-=' | '*=' | '/=' | '%=';
 
 FORMATOPERATOR : '-f';
@@ -463,9 +531,9 @@ VARIABLE :
     | '$' '{' ANY_CHAR+ '}'
 ;
 
-//IDENTIFIER : [a-zA-Z0-9_.]+;
+IDENTIFIER : [a-zA-Z0-9_.]+;
 
-COMMANDPARAMETER : ('-'|'--') [a-zA-Z]+ ':'?;        
+COMMANDPARAMETER : ('-'|'--') [a-zA-Z] ':'?;        
     
 DEQ : '-' E Q;
 DNE : '-' N E; 
@@ -510,8 +578,8 @@ DREPLACE : '-' R E P L A C E;
 DIREPLACE : '-' I R E P L A C E;
 DCREPLACE : '-' C R E P L A C E;
     
-STATEMENTTERMINATOR : ';' | '\n' | '\r' | '\r\n';             
-NEWLINES : '\r\n'+ | [\r\n\u2028\u2029]+;
+STATEMENTTERMINATOR : ';' | '\n' | '\r';             
+NEWLINES : '\r' '\n' | [\r\n\u2028\u2029];
 
 STRINGLITERAL :
     '"' (~["\r\n] | '""')* '"'
@@ -522,11 +590,11 @@ STRINGLITERALWITHSUBEXPRESSION :
 
 GENERICTOKENWITHSUBEXPRSTART : '$(';    
         
-TYPENAMEIDENTIFIERCHAR : [a-zA-Z0-9_äöüÄÖÜ.`];
+TYPENAMEIDENTIFIERCHAR : [a-zA-Z0-9_äöüÄÖÜ.`]+;
 TYPELITERAL : '[' [a-zA-Z0-9.]+ ']';
-LABEL : [a-zA-Z0-9.]+ ':';
+LABEL : ':' [a-zA-Z0-9.]+;
 LITERAL : ':' [a-zA-Z0-9]+;
-SIMPLENAME : [a-zA-Z0-9\-.]+;    
+SIMPLENAME : [a-zA-Z0-9]+;    
 PROPERTYNAME : [a-zA-Z]+;
     
 fragment LETTER : [a-zA-Z_äöüÄÖÜ];
