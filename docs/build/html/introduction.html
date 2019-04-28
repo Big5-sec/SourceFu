@@ -4,23 +4,17 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Introduction &#8212; SourceFu 0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="canonical" href="https://big5-security.com/sourcefu/introduction.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Some state of the art" href="some state of the art.html" />
@@ -33,20 +27,21 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="about">
 <h2>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h2>
-<p>For source code intellectual property or to evade antivirus signatures, more and more programs get obfuscated from the source code. Famous legal examples are Facebook app on android or Dropbox client(in python). SourceFu is a tool that triestrying to provide a generic source to source deobfuscator, for malware analysts, reversers or simply curious people. Why generic? First, because SourceFu aims at providing support for multiple languages obfuscation. Second because deobfuscation methods employed should be adaptable to every language.</p>
+<p>For source code intellectual property or to evade antivirus signatures, more and more programs get obfuscated from the source code. Famous legal examples are the use of <a class="reference external" href="https://www.guardsquare.com/en/products/proguard">Proguard</a> for android applications or <a class="reference external" href="https://www.usenix.org/conference/woot13/workshop-program/presentation/kholia">Dropbox client</a> . SourceFu is a tool that trying to provide a generic source to source deobfuscator, for malware analysts, reversers or simply curious people. Why generic? First, because SourceFu aims at providing support for multiple languages obfuscation. Second because deobfuscation methods employed should be adaptable to every language.</p>
 <p>The documentation tries to cover the whole project :</p>
 <ul class="simple">
 <li>In this page, the genesis of the project, as well as a little insight of SourceFu features and limitations will be presented. A bit more in-depth analysis of why SourceFu could be interesting is presented <a class="reference internal" href="some state of the art.html"><span class="doc">there</span></a></li>
@@ -54,7 +49,7 @@
 <li>A complete user manual is given <span class="xref std std-doc">there</span></li>
 <li>the whole methodology used by the tool is then explained <a class="reference internal" href="functioning.html"><span class="doc">here</span></a>.</li>
 <li>Current ideas to improve SourceFu are presented <a class="reference internal" href="planned features.html"><span class="doc">here</span></a></li>
-<li>Wanna contribute? please see the <span class="xref std std-doc">contributing guide</span> as well as the <span class="xref std std-doc">development guide</span> (those sections still need to be done).</li>
+<li>Wanna contribute? please see the <span class="xref std std-doc">contributing guide</span> as well as the <span class="xref std std-doc">development guide</span>.</li>
 </ul>
 </div>
 <div class="section" id="sourcefu-overview">
@@ -71,7 +66,15 @@
 </div>
 <div class="section" id="what-is-this-really-about-so">
 <h3>What is this really about so?<a class="headerlink" href="#what-is-this-really-about-so" title="Permalink to this headline">¶</a></h3>
-<p><em>this section is still under construction</em></p>
+<p>SourceFu aims at becoming a complete source deobfuscation framework. The current work has been focused on using partial evaluation and middle-front compilers optimizations, for VBA and Javascript, as well as a bit of Powershell. While the tool is quite in its infancy, many works and ideas from other people could be implemented. Hopefully, this tool could become one of the de-facto tool for source deobfuscation in future, with an active community around it.</p>
+<p>It’s presented as one jar that can be used in three different manners :</p>
+<ul class="simple">
+<li>a command line tool, that is providing a way to invoke sourcefu routines on an input.</li>
+<li>an api server, using REST, also invoking background routines</li>
+<li>a full web server, presenting a graphical interface. This we server uses the API server and a database to work.</li>
+</ul>
+<p>Here is an example of using SourceFu CLI :</p>
+<a class="reference internal image-reference" href="_images/sourcefu_exemple.gif"><img alt="_images/sourcefu_exemple.gif" class="align-center" src="_images/sourcefu_exemple.gif" style="width: 674.0px; height: 428.5px;" /></a>
 </div>
 <div class="section" id="wait-so-you-re-using-java">
 <h3>Wait, so you’re using java?<a class="headerlink" href="#wait-so-you-re-using-java" title="Permalink to this headline">¶</a></h3>
@@ -81,21 +84,27 @@
 <p>Also, i did not want to code the whole thing in languages such as C/C++, because SourceFu basically manipulates strings, and strings management in C is quite a nightmare. By the way, i was not able to make functioning programs using C++ runtime of antlr, as outputs from antlr do not compile.</p>
 <p>So, the original language used by antlr (and normally fully supported), java, was chosen, even if i hate it. For the comparison, here is the time needed to parse the same script i parsed with python, while still initializing the whole JVM and while in a VM :</p>
 <a class="reference internal image-reference" href="_images/sourcefu_java_vs_python2.png"><img alt="_images/sourcefu_java_vs_python2.png" class="align-center" src="_images/sourcefu_java_vs_python2.png" style="width: 588.0px; height: 67.2px;" /></a>
-</div>
-<div class="section" id="features">
-<h3>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h3>
-<p>For now, SourceFu provides a command line interface permitting to run some deobfuscation routines on a VBA script. Unfortunately, this kind of tool is hard to code, and features are still not extensive. A complete list of what to expect is presented <a class="reference internal" href="functioning.html"><span class="doc">there</span></a>.</p>
+<p>Finally, Java is almost learnt in every programming school in the world, and is cross-platform. And as an example, almost every pentester in the world right now uses <a class="reference external" href="https://portswigger.net/">Burp</a>, which is developed in java.</p>
 </div>
 <div class="section" id="limitations">
 <h3>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h3>
 <p>Deobfuscation is a NP-complete problem. In “understandable” words, you won’t be able to retrieve the original script for sure.</p>
 <p>Indeed, let’s say you have “var4” as a variable name within a script, which is then obfuscated to “AzsXX1LiOo0pm”. It’s impossible to determine actually if the original name was actually “var4” instead of “var1”. Retrieving comments are not possible too.</p>
 </div>
+<div class="section" id="disclaimer">
+<h3>Disclaimer<a class="headerlink" href="#disclaimer" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>SourceFu is still in an experimental state. Results might be wrong, tool might as well crash.</li>
+<li>Deobfuscation is an hard subject, the work is huge.</li>
+<li>This project is only developed on my spare time. Any help from you (even simply giving samples on which SourceFu does not work or telling me about syntax errors in this documentation) will be really appreciated!</li>
+</ul>
+</div>
 </div>
 </div>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -120,15 +129,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#genesis-of-the-project">genesis of the project</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#what-is-this-really-about-so">What is this really about so?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#wait-so-you-re-using-java">Wait, so you’re using java?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#disclaimer">Disclaimer</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="some state of the art.html">Some state of the art</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="functioning.html">functioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functioning.html">Functioning</a></li>
 <li class="toctree-l1"><a class="reference internal" href="planned features.html">Planned Features</a></li>
 </ul>
 
@@ -143,14 +152,24 @@
 </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>

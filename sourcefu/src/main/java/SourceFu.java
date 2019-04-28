@@ -1,5 +1,6 @@
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ExecutionException;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.RunLast;
@@ -259,14 +260,10 @@ public class SourceFu {
 		commandLine.addSubcommand("standalone", new TerminalSourceFu());
 		commandLine.addSubcommand("apiserver", new APIServerSourceFu());
 		commandLine.addSubcommand("webserver", new WebServerSourceFu());
-		//commandLine.addSubcommand("graphical", new GraphicalSourceFu());
-		//List<CommandLine> parsed = commandLine.parse(args);
-		//handleParseResult(parsed);
-		//try {
+		try {
 			commandLine.parseWithHandler(new RunLast(), System.err, args);
-		/*} catch (Exception e) {
+		} catch (ExecutionException e) {
 			System.out.println("Invalid command specified. Please use --help.");
-		}*/
-		//commandLine.parseWithHandler(new RunLast(), System.err, args);
+		}
 	}
 }

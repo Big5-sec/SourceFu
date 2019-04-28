@@ -3,7 +3,7 @@ Introduction
 
 About
 =======
-For source code intellectual property or to evade antivirus signatures, more and more programs get obfuscated from the source code. Famous legal examples are Facebook app on android or Dropbox client(in python). SourceFu is a tool that triestrying to provide a generic source to source deobfuscator, for malware analysts, reversers or simply curious people. Why generic? First, because SourceFu aims at providing support for multiple languages obfuscation. Second because deobfuscation methods employed should be adaptable to every language.
+For source code intellectual property or to evade antivirus signatures, more and more programs get obfuscated from the source code. Famous legal examples are the use of `Proguard <https://www.guardsquare.com/en/products/proguard>`_ for android applications or `Dropbox client <https://www.usenix.org/conference/woot13/workshop-program/presentation/kholia>`_ . SourceFu is a tool that trying to provide a generic source to source deobfuscator, for malware analysts, reversers or simply curious people. Why generic? First, because SourceFu aims at providing support for multiple languages obfuscation. Second because deobfuscation methods employed should be adaptable to every language.
 
 The documentation tries to cover the whole project :
 
@@ -12,7 +12,7 @@ The documentation tries to cover the whole project :
 - A complete user manual is given :doc:`there </user manual>`
 - the whole methodology used by the tool is then explained :doc:`here </functioning>`.
 - Current ideas to improve SourceFu are presented :doc:`here </planned features>`
-- Wanna contribute? please see the :doc:`contributing guide </contributing guide>` as well as the :doc:`development guide </development guide>` (those sections still need to be done). 
+- Wanna contribute? please see the :doc:`contributing guide </contributing guide>` as well as the :doc:`development guide </development guide>`. 
 
 
 SourceFu overview
@@ -41,19 +41,21 @@ From those questions emerged the SourceFu project... whose name is composed of "
 
 What is this really about so?
 -----------------------------
-*this section is still under construction*
 
-..
-  Let's take here is a sample taken from the "Obfuscated Empire" framework, that i don't want to deobfuscate by hand because i'm too lazy.
+SourceFu aims at becoming a complete source deobfuscation framework. The current work has been focused on using partial evaluation and middle-front compilers optimizations, for VBA and Javascript, as well as a bit of Powershell. While the tool is quite in its infancy, many works and ideas from other people could be implemented. Hopefully, this tool could become one of the de-facto tool for source deobfuscation in future, with an active community around it.
 
-  The code taken from "Obfuscated Empire" is stored within "myobf1.ps1" and  
-  **TBD**
+It's presented as one jar that can be used in three different manners :
 
-  We will use here SourceFu to provide us a deobfuscation pass:
-  **TBD**
- 
-  Here is the result :
-  **TBD**
+- a command line tool, that is providing a way to invoke sourcefu routines on an input.
+- an api server, using REST, also invoking background routines
+- a full web server, presenting a graphical interface. This we server uses the API server and a database to work.
+
+Here is an example of using SourceFu CLI :
+
+.. image:: imgs/sourcefu_exemple.gif
+   :scale: 50%
+   :align: center
+
 
 Wait, so you're using java?
 ---------------------------
@@ -76,9 +78,7 @@ So, the original language used by antlr (and normally fully supported), java, wa
    :align: center
 
 
-Features
---------
-For now, SourceFu provides a command line interface permitting to run some deobfuscation routines on a VBA script. Unfortunately, this kind of tool is hard to code, and features are still not extensive. A complete list of what to expect is presented :doc:`there</functioning>`. 
+Finally, Java is almost learnt in every programming school in the world, and is cross-platform. And as an example, almost every pentester in the world right now uses `Burp <https://portswigger.net/>`_, which is developed in java.
 
 Limitations
 -----------
@@ -86,3 +86,10 @@ Limitations
 Deobfuscation is a NP-complete problem. In "understandable" words, you won't be able to retrieve the original script for sure.
 
 Indeed, let's say you have "var4" as a variable name within a script, which is then obfuscated to "AzsXX1LiOo0pm". It's impossible to determine actually if the original name was actually "var4" instead of "var1". Retrieving comments are not possible too.
+
+Disclaimer
+----------
+
+- SourceFu is still in an experimental state. Results might be wrong, tool might as well crash.
+- Deobfuscation is an hard subject, the work is huge.
+- This project is only developed on my spare time. Any help from you (even simply giving samples on which SourceFu does not work or telling me about syntax errors in this documentation) will be really appreciated!

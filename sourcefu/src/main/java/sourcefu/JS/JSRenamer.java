@@ -31,15 +31,27 @@ public class JSRenamer extends JavaScriptParserBaseListener{
 	public void rename() {
 		for(Scope scope:scopes) {
 			int localsIndex = 0;
+			int argIndex=0;
 			for (Map.Entry<String, Symbol> symbol : scope.getSymbols().entrySet()) {
-				//System.out.println(entry.getKey() + "/" + entry.getValue());
+				System.out.println(symbol.getKey() + "/" + symbol.getValue());
 				for(Integer index: symbol.getValue().getIndex()) {
 					if(symbol.getValue().getAltname().contains("function")) {
 						this.rewriter.replace(index, index, scope.getName()+"_"+symbol.getValue().getAltname());
+					} else if(symbol.getValue().getAltname().contains("arg")) {
+						this.rewriter.replace(index, index, scope.getName()+"_"+symbol.getValue().getAltname()+String.valueOf(argIndex));
+
 					} else {
 						this.rewriter.replace(index, index, scope.getName()+"_"+symbol.getValue().getAltname()+String.valueOf(localsIndex));
-						localsIndex+=1;
+
 					}
+				}
+				if(symbol.getValue().getAltname().contains("arg")) {
+					argIndex+=1;
+					continue;
+				}
+				
+				if(!(symbol.getValue().getAltname().contains("function"))) {
+					localsIndex+=1;				
 				}
 			}
 		}

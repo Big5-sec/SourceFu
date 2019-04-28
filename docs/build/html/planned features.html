@@ -4,26 +4,20 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Planned Features &#8212; SourceFu 0 documentation</title>
+    <title>Roadmap &#8212; SourceFu 0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="canonical" href="https://big5-security.com/sourcefu/planned features.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="functioning" href="functioning.html" />
+    <link rel="prev" title="Functioning" href="functioning.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -32,44 +26,120 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
-  <div class="section" id="planned-features">
-<h1>Planned Features<a class="headerlink" href="#planned-features" title="Permalink to this headline">¶</a></h1>
-<ul>
-<li><p class="first">find a better deobfuscation routine : specify completely rules producing a “better visibility” on the code. Basically, one could argue the following rule works : if a replacement to be done is more concise than then expression to be replaced, then it should be done. Also, a variable should be replaced only if it permits expression replacement afterwards. <br/><br/></p>
-</li>
-<li><p class="first">provide a better cli for sourcefu, with the following options (with something similar to Cuckoo):</p>
-<blockquote>
-<div><ul class="simple">
-<li>standalone : a terminal use of the tool</li>
-<li>server : lauching a server that is able to realize operations through an API</li>
-<li>client : launching a server offering a complete graphical interface to SourceFu (ideally, something with syntax coloring, renaming support like in IDA pro, and meld like interface) <br/><br/></li>
+  <div class="section" id="roadmap">
+<h1>Roadmap<a class="headerlink" href="#roadmap" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>Roadmap<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="92%" />
+<col width="8%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head" colspan="2">SSTIC 2019</th>
+</tr>
+<tr class="row-even"><th class="head">Steps</th>
+<th class="head">Status</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-odd"><td>Javascript : implements expression simplification</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>Javascript : gather samples</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>Powershell : create functional grammar, maybe</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>VBA: add tables support</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>VBA: add constant return functions simplification</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>API server : makes it almost functional</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>Web server : makes it almost functional too :)</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>core : add tests, to serve as a basis and an improve point</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>documentation : complete it</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>documentation : make some stats about deobfuscation for prez</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>core : code formating and commenting</td>
+<td>&#160;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="ideas">
+<h2>Ideas<a class="headerlink" href="#ideas" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="core">
+<h3>core<a class="headerlink" href="#core" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>always improve code support and deobfusactions routines!!!</li>
+<li>full interpretation : go further for loops and functions interpretation for example</li>
+<li>make analysis like vipermonkey, jsdetox,</li>
+<li>functions inlining</li>
+<li>spaghetti code simplification by basic block tagging</li>
+<li>add support for basic (autoit), and others?</li>
+<li>might be interesting to go further for another langages like python (beh bytecode editing?)</li>
+<li>might propose it to cuckoo when the tool will be quite correct?</li>
+<li>variables renaming based on context</li>
+<li>how to make the diff between optimization and vizualization of code?</li>
+<li>automatically determine if comments are helpful or not?</li>
+<li>automatically recovers elements caracterizing anti-debug and such</li>
+<li>support multiple languages in the same code, like for example when a VBA macro calls an obfuscated Powershell…</li>
+<li>support directly files instead of code (like office ones)</li>
 </ul>
-</div></blockquote>
-</li>
-<li><p class="first">provide analysis such as ViperMonkey, callgraph, and such <br/><br/></p>
-</li>
-<li><p class="first">use of database to keep results <br/><br/></p>
-</li>
-<li><p class="first">plugin support, huh??? (yara, VT,…) <br/><br/></p>
-</li>
-<li><p class="first">support more language <br/><br/></p>
-</li>
-<li><p class="first">support multiple languages in the same code, like for example when a VBA macro calls an obfuscated Powershell… <br/><br/></p>
-</li>
+</div>
+<div class="section" id="api-server">
+<h3>API server<a class="headerlink" href="#api-server" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>makes it more unified</li>
 </ul>
+</div>
+<div class="section" id="web-interface">
+<h3>web interface<a class="headerlink" href="#web-interface" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>maybe separate it from api server</li>
+<li>full featured IDE like</li>
+<li>add more properties to the IDE, like direct interaction with picked token (renaming, invoking special routines, etc…)</li>
+<li>add plugins like VT, yara and such</li>
+</ul>
+</div>
+<div class="section" id="tests">
+<h3>tests<a class="headerlink" href="#tests" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>gather multiple samples on the web</li>
+</ul>
+</div>
+<div class="section" id="documentation">
+<h3>documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
 </div>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -91,28 +161,50 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="some state of the art.html">Some state of the art</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="functioning.html">functioning</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Planned Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user manual.html">User manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functioning.html">Functioning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Roadmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ideas">Ideas</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core">core</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#api-server">API server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#web-interface">web interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tests">tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="functioning.html" title="previous chapter">functioning</a></li>
+      <li>Previous: <a href="functioning.html" title="previous chapter">Functioning</a></li>
   </ul></li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>

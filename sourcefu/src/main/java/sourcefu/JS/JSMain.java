@@ -169,9 +169,10 @@ public class JSMain {
 		if(this.temp_data==null) {
 			this.temp_data = this.initial_data;
 		}
-		
+		*/
 		while (this.doWork) { //multipass
 			this.numberModifications=0;
+			/*
 			if(this.doEmpty) {
 				CharStream input = getCharStreamFromData(this.temp_data);
 				CommonTokenStream tokens = generateTokens(input);
@@ -186,23 +187,23 @@ public class JSMain {
 			if(this.temp_data==null) {
 				this.temp_data = this.initial_data;
 			}
-			
+			*/
 			if(this.doDeadStore) {
 				CharStream input = getCharStreamFromData(this.temp_data);
 				CommonTokenStream tokens = generateTokens(input);
 				ParseTree tree = generateTree(tokens);
 				ParseTreeWalker walker = new ParseTreeWalker();
-//				VBADeadStore deadstorer = new VBADeadStore(tokens);
-//				walker.walk(deadstorer, tree);
-//				deadstorer.deadstore();
-//				this.temp_data = deadstorer.getdata();
-//				this.numberModifications+=deadstorer.getNumberModifications();
+				JSDeadStore deadstorer = new JSDeadStore(tokens);
+				walker.walk(deadstorer, tree);
+				deadstorer.deadstore();
+				this.temp_data = deadstorer.getdata();
+				this.numberModifications+=deadstorer.getNumberModifications();
 			}
 			
 			if(this.temp_data==null) {
 				this.temp_data = this.initial_data;
 			}
-			
+			/*
 			if(this.doDeadStore) { //TODO:change
 				CharStream input = getCharStreamFromData(this.temp_data);
 				CommonTokenStream tokens = generateTokens(input);
@@ -235,7 +236,7 @@ public class JSMain {
 			if(this.temp_data==null) {
 				this.temp_data = this.initial_data;
 			}
-			
+			*/
 			//check for end of loop
 			if(this.numberModifications==0) {
 				this.doWork = false;
@@ -246,7 +247,7 @@ public class JSMain {
 				System.out.println(this.temp_data);
 			}
 		}
-		*/
+		
 		if(this.doRename) {
 			CharStream input = getCharStreamFromData(this.temp_data);
 			CommonTokenStream tokens = generateTokens(input);

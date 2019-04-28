@@ -1,34 +1,74 @@
-Planned Features
-****************
+Roadmap
+*******
 
-.. |br| raw:: html
+Roadmap
+-------
 
-   <br/><br/>
-
-- find a better deobfuscation routine : specify completely rules producing a "better visibility" on the code. Basically, one could argue the following rule works : if a replacement to be done is more concise than then expression to be replaced, then it should be done. Also, a variable should be replaced only if it permits expression replacement afterwards. |br|
-
-
-- provide a better cli for sourcefu, with the following options (with something similar to Cuckoo):
-
-   - standalone : a terminal use of the tool
-
-   - server : lauching a server that is able to realize operations through an API
-
-   - client : launching a server offering a complete graphical interface to SourceFu (ideally, something with syntax coloring, renaming support like in IDA pro, and meld like interface) |br|
-
-
-- provide analysis such as ViperMonkey, callgraph, and such |br|
-
-
-- use of database to keep results |br|
-
-
-- plugin support, huh??? (yara, VT,...) |br|
+====================================================================== ======
+   SSTIC 2019
+-----------------------------------------------------------------------------
+  Steps                                                                Status
+====================================================================== ======  
+Javascript : implements expression simplification
+Javascript : gather samples
+Powershell : create functional grammar, maybe
+VBA: add tables support
+VBA: add constant return functions simplification
+API server : makes it almost functional
+Web server : makes it almost functional too :)
+core : add tests, to serve as a basis and an improve point
+documentation : complete it
+documentation : make some stats about deobfuscation for prez
+core : code formating and commenting
+====================================================================== ======  
 
 
-- support more language |br|
+
+Ideas
+-----
+
+core
+~~~~
+- always improve code support and deobfusactions routines!!!
+- full interpretation : go further for loops and functions interpretation for example
+- make analysis like vipermonkey, jsdetox, 
+- functions inlining  
+- spaghetti code simplification by basic block tagging
+- add support for basic (autoit), and others?
+- might be interesting to go further for another langages like python (beh bytecode editing?)
+- might propose it to cuckoo when the tool will be quite correct?
+- variables renaming based on context
+- how to make the diff between optimization and vizualization of code?
+- automatically determine if comments are helpful or not?
+- automatically recovers elements caracterizing anti-debug and such
+- support multiple languages in the same code, like for example when a VBA macro calls an obfuscated Powershell...
+- support directly files instead of code (like office ones)
+  
+
+API server
+~~~~~~~~~~
+- makes it more unified
 
 
-- support multiple languages in the same code, like for example when a VBA macro calls an obfuscated Powershell... |br|
+web interface
+~~~~~~~~~~~~~
+- maybe separate it from api server
+- full featured IDE like
+- add more properties to the IDE, like direct interaction with picked token (renaming, invoking special routines, etc...)
+- add plugins like VT, yara and such  
+
+
+tests
+~~~~~
+
+- gather multiple samples on the web
+
+
+documentation
+~~~~~~~~~~~~~
+
+
+
+
 
 

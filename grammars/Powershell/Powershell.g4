@@ -5,18 +5,18 @@
 grammar Powershell;
 
 
-startRule: (pipeline statementTerminators)* EOF;
+startRule: scriptBlockBody? EOF;
     
 /*        
 startRule : scriptBlock EOF;
-
+*/
 scriptBlock :
     //usingStatements?
     //paramBlock?
     //statementTerminators?
     scriptBlockBody?
 ;
-
+/*
 usingStatements : usingStatement+;
 
 usingStatement :
@@ -33,7 +33,7 @@ usingStatement :
 
     
 paramBlock: NEWLINES? attributeList? NEWLINES? 'param' NEWLINES? '(' parameterList? NEWLINES? ')' ;
-
+*/
 parameterList : scriptParameter ( NEWLINES? ',' scriptParameter )* ;
 
 scriptParameter : NEWLINES? attributeList? NEWLINES? VARIABLE scriptParameterDefault? ;
@@ -83,13 +83,9 @@ namespaceSpec : typeNameIDENTIFIER ('.' typeNameIDENTIFIER)* ;
 typeNameIDENTIFIER : TYPENAMEIDENTIFIERCHAR+ ;
 
 scriptBlockBody :
-    namedBlockList
+    statementBlock
     | statementList
 ;
-
-namedBlockList : namedBlock+;
-
-namedBlock : statementTerminators? blockName statementBlock;
 
 statementBlock : NEWLINES? '{' statementList? NEWLINES? '}';
 
@@ -103,7 +99,7 @@ statement :
     | trapStatement
     | tryStatement
     | dataStatement
-    | pipeline
+    | pipeline 
 ;
 
 labeledStatement :
@@ -307,23 +303,27 @@ dataCommandsAllowed : NEWLINES? '-suportedcommand' dataCommandsList;
 dataCommandsList : NEWLINES? dataCommand (',' NEWLINES? dataCommand)*;
 
 dataCommand : commandNameExpr;
-*/
+
 pipeline :
     assignmentExpression
     | command pipelineTail?
     | expression redirections? pipelineTail?
 ;    
-            
-//assignmentExpression : expression ASSIGNMENTOPERATOR statement;
-assignmentExpression : expression ASSIGNMENTOPERATOR expression;    
+
+//pipelineexpr: expression redirections? pipelineTail?;
+    
+                
+assignmentExpression : expression assignmentOperator statement;
+//assignmentExpression : expression '=' statement;
+//assignmentExpression : expression ASSIGNMENTOPERATOR expression;    
 
 pipelineTail : ('|' NEWLINES? command)+;
 
 redirections : redirection+;
 
 redirection :
-    MERGINGREDIRECTIONOPERATOR
-    | FILEREDIRECTIONOPERATOR redirectedFileName
+    mergingredirectionoperator
+    | fileredirectionoperator redirectedFileName
 ;
 
 redirectedFileName :
@@ -421,9 +421,9 @@ scriptBlockExpression : '{' NEWLINES? scriptBlock NEWLINES? '}';
 arrayExpression : '@(' NEWLINES? statementList? NEWLINES? ')';
 
 subExpression : '$(' NEWLINES? statementList? NEWLINES? ')';
-
-parenthesizedExpression : '(' NEWLINES? pipeline NEWLINES? ')' ;
 */
+parenthesizedExpression : '(' NEWLINES? pipeline NEWLINES? ')' ;
+
 memberName :
     SIMPLENAME
     | STRINGLITERAL
@@ -450,13 +450,13 @@ MultiLineComment:               '<#' .*? '#>'             -> channel(HIDDEN);
 SingleLineComment:              '#' ~[\r\n]* -> channel(HIDDEN);
 WhiteSpaces:                    [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
            
-ASSIGNMENTOPERATOR : '=' | '+=' | '-=' | '*=' | '/=' | '%=';
+assignmentOperator : '=' | '+=' | '-=' | '*=' | '/=' | '%=';
 
 FORMATOPERATOR : '-f';
 
 //we might see another combination, please compltete    
-MERGINGREDIRECTIONOPERATOR : '2>&1' | '3>&1' | '4>&1' | '5>&1' | '6>&1' | '1>&2'; 
-FILEREDIRECTIONOPERATOR :  '>>' | '>' | '<<' | '<' | '>|' | '2>' | '2>>' | '1>>' | '3>' | '3>>' | '4>' | '4>>' | '5>' | '5>>' | '*>' | '*>>';    
+mergingredirectionoperator : '2>&1' | '3>&1' | '4>&1' | '5>&1' | '6>&1' | '1>&2'; 
+fileredirectionoperator :  '>>' | '>' | '<<' | '<' | '>|' | '2>' | '2>>' | '1>>' | '3>' | '3>>' | '4>' | '4>>' | '5>' | '5>>' | '*>' | '*>>';    
     
 VARIABLE :
     '$' [a-zA-Z0-9]+
@@ -510,8 +510,8 @@ DREPLACE : '-' R E P L A C E;
 DIREPLACE : '-' I R E P L A C E;
 DCREPLACE : '-' C R E P L A C E;
     
-STATEMENTTERMINATOR : ';' | '\n' | '\r' | '\r\n';             
-NEWLINES : '\r\n'+ | [\r\n\u2028\u2029]+;
+STATEMENTTERMINATOR : ';' | '\r\n'+;             
+NEWLINES : ('\r\n'+) ;
 
 STRINGLITERAL :
     '"' (~["\r\n] | '""')* '"'

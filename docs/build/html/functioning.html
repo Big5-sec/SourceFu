@@ -4,23 +4,17 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Functioning &#8212; SourceFu 0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="canonical" href="https://big5-security.com/sourcefu/functioning.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Planned Features" href="planned features.html" />
@@ -33,13 +27,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="functioning">
@@ -52,7 +47,7 @@
 <li><p class="first">the first step consists in code simplification (simplifier step), that does not need any interpretation at all. The source is parsed and the abstract syntax tree is constructed. Comments are first deleted (actually it might be interesting to determine if comments are useful or not). To do so, each node in the abstract tree that are comments are replaced with an empty line. Also, a deadstore optimization is realized. To do so, while traversing the parse tree, for each local scope, all symbols are registered in a list and their usage is tracked. Then, every symbol definition that does not have an associated usage is deleted. The algorithm associated with this step is the following in pseudo code:</p>
 <blockquote>
 <div><p>1) constructing the lists:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">When</span> <span class="n">meeting</span> <span class="n">a</span> <span class="n">symbol</span> <span class="n">definition</span> <span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">When</span> <span class="n">meeting</span> <span class="n">a</span> <span class="n">symbol</span> <span class="n">definition</span> <span class="p">:</span>
     <span class="k">if</span> <span class="n">the</span> <span class="n">symbol</span> <span class="n">definition</span> <span class="ow">is</span> <span class="n">tied</span> <span class="n">to</span> <span class="n">a</span> <span class="n">function</span> <span class="n">call</span><span class="p">:</span>
         <span class="k">return</span><span class="p">;</span>
 
@@ -76,7 +71,7 @@
 </pre></div>
 </div>
 <p>2) resolving the deadstore:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">each</span> <span class="n">scope</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">each</span> <span class="n">scope</span><span class="p">:</span>
    <span class="k">for</span> <span class="n">every</span> <span class="n">symbol</span> <span class="n">definition</span><span class="p">:</span>
        <span class="k">if</span> <span class="n">symbol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">marked</span> <span class="k">as</span> <span class="n">used</span><span class="p">:</span>
            <span class="n">delete</span> <span class="n">the</span> <span class="n">definition</span>
@@ -86,7 +81,7 @@
 </div></blockquote>
 </li>
 </ul>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">If</span> <span class="bp">False</span> <span class="n">Then</span>
         <span class="n">Func1</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="n">End</span> <span class="k">if</span>
@@ -102,7 +97,7 @@
 <p>Here, the expression <cite>2+3</cite> can be evaluated to <cite>5</cite>. The AST can so be annotated like so:</p>
 <a class="reference internal image-reference" href="_images/ast2.png"><img alt="_images/ast2.png" class="align-center" src="_images/ast2.png" style="width: 336.8px; height: 309.6px;" /></a>
 <p>Then, replacement is done following this algortihm:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">traverse_node</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">traverse_node</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="n">annotated</span> <span class="ow">and</span> <span class="n">node</span><span class="s1">&#39;s children number &gt; 2 :</span>
        <span class="n">replace</span> <span class="n">current</span> <span class="n">node</span> <span class="ow">and</span> <span class="nb">all</span> <span class="n">of</span> <span class="n">its</span> <span class="n">children</span> <span class="k">with</span> <span class="n">the</span> <span class="n">annotation</span><span class="p">;</span>
        <span class="n">end</span><span class="p">;</span>
@@ -132,7 +127,7 @@
 </ul>
 <p>This transformation simply removes every comments from the code. Ideally, i would like to create some heuristics to be able to say if comments appear to be interesting or not. Unfortunately, i don’t have the database to say so…</p>
 <p>The following code :</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="s1">&#39; this is a comment for func1</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39; this is a comment for func1</span>
 <span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
 <span class="s1">&#39;useless comment</span>
     <span class="n">Func1</span> <span class="o">=</span> <span class="mi">2</span>
@@ -141,7 +136,7 @@
 </pre></div>
 </div>
 <p>is transformed as such :</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">Func1</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">End</span> <span class="n">Function</span>
 </pre></div>
@@ -153,7 +148,7 @@
 <li><em>status</em> : <span style="color:green;">completed</span></li>
 </ul>
 <p>The expression interpreter rewrites boolean expression, if they can be evaluated, by “False” or “True”. As such, it’s possible to write a simple IF statements simplifier depending on the text of the boolean expressions used in the complete if-elseif-else structure. Basically, if all boolean expressions of the if-elseif-else structure are either equal to “False” or “True”, then the complete structure can be simplified by removing all cases that are evaluated to “False”. It then remains the only block that will be executed by the code. In future, this simplifier should not depend of the text but from the boolean expression value instead. Here is an example :</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">If</span> <span class="bp">False</span> <span class="n">Then</span>
         <span class="n">X</span> <span class="o">=</span> <span class="mi">4</span>
@@ -166,7 +161,7 @@
 </pre></div>
 </div>
 <p>This previous code is transformed like that by this transformation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">X</span> <span class="o">=</span> <span class="mi">6</span>
     <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
@@ -180,7 +175,7 @@
 <li><em>status</em> : <span style="color:blue;">TODO</span></li>
 </ul>
 <p>As in the previous transformation, only the case evaluating to True is kept by SourceFu in a switch statement, if the expression can be evaluated. The idea is so to simply get the value of the expression in the Select, because the partial interpreter should have transformed it. Here is an example :</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">Select</span> <span class="n">Case</span> <span class="mi">3</span>
         <span class="n">Case</span> <span class="mi">1</span>
@@ -195,7 +190,7 @@
 </pre></div>
 </div>
 <p>This previous code is transformed like that by this transformation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">X</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
@@ -209,7 +204,7 @@
 <li><em>status</em> : <span style="color:blue;">TODO</span></li>
 </ul>
 <p>The idea here is to move out of loops all statements that are not impacted by the loop itself. The complete list of what is realized is still not done, as this transformation is still not coded :P. Here is an example of what could be done :</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">For</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span> <span class="n">To</span> <span class="mi">5</span>
         <span class="n">Dim</span> <span class="n">Y</span> <span class="o">=</span> <span class="mi">3</span> <span class="k">as</span> <span class="n">Integer</span>
@@ -221,7 +216,7 @@
 </pre></div>
 </div>
 <p>This previous code is transformed like that by this transformation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">Dim</span> <span class="n">Y</span> <span class="o">=</span> <span class="mi">3</span> <span class="k">as</span> <span class="n">Integer</span>
     <span class="n">X</span> <span class="o">=</span> <span class="mi">4</span>
@@ -239,7 +234,7 @@
 <li><em>status</em> : <span style="color:orange;">not complete</span></li>
 </ul>
 <p>The idea here is to delete code that does not affect the program. For now, the idea is to delete every variables declaration realized before subsequent declarations until the variable is used in the program. In future, the idea will be to also delete code behind “Exit Sub” statement and such. Here is an example of what is realized now:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">X</span> <span class="o">=</span> <span class="mi">5</span>
     <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
@@ -247,7 +242,7 @@
 </pre></div>
 </div>
 <p>In this example, there is no need to keep the first declaration of X. The code can be so transformed like this :</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">X</span> <span class="o">=</span> <span class="mi">5</span>
     <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
 <span class="n">End</span> <span class="n">Function</span>
@@ -260,14 +255,14 @@
 <li><em>status</em> : <span style="color:orange;">not complete</span></li>
 </ul>
 <p>VBA defines multiple constants, that are defined as this by the language. In order to treat them for partial evaluation, those are replaced by their value. Unfortunately, this transformation does not increase the visibility, and it should be able to revert the transformation back. Here is an example of the transformation realized:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">X</span> <span class="o">=</span> <span class="n">StrConv</span><span class="p">(</span><span class="s2">&quot;CouCou&quot;</span><span class="p">,</span> <span class="n">vbLowerCase</span><span class="p">)</span>
     <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
 <span class="n">End</span> <span class="n">Function</span>
 </pre></div>
 </div>
 <p>to :</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">X</span> <span class="o">=</span> <span class="n">StrConv</span><span class="p">(</span><span class="s2">&quot;CouCou&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">Func1</span> <span class="o">=</span> <span class="n">X</span>
 <span class="n">End</span> <span class="n">Function</span>
@@ -280,7 +275,7 @@
 <li><em>status</em> : <span style="color:green;">completed</span></li>
 </ul>
 <p>This transformation deletes the structures in which there are empty blocks. Those structures can be loops, conditionnal branchs as well as Functions or Subs. Here is an example :</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">If</span> <span class="mi">3</span> <span class="o">=</span> <span class="mi">2</span> <span class="n">Then</span>
     <span class="n">End</span> <span class="n">If</span>
     <span class="n">Func1</span> <span class="o">=</span> <span class="mi">4</span>
@@ -288,7 +283,7 @@
 </pre></div>
 </div>
 <p>Here, the conditionnal branch is useless because it does nothing. It is simply deleted by the transformation :</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">Func1</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="n">End</span> <span class="n">Function</span>
 </pre></div>
@@ -326,7 +321,7 @@
 <li><em>status</em> : <span style="color:red;">experimental</span></li>
 </ul>
 <p>On of the common obfuscation technique is to use variables names that are difficult to read or distinguish for humans. To circumvent this, this transformation renames every variables based on their scope. The following nomenclature is done now : &lt;scope&gt;_&lt;n°&gt;. Unfortunately, this transformation still renames more than necessary (especially, it renames object properties, and there are some standard names that should not be renamed). Here is an example of what this transformation may do:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Dim</span> <span class="n">U</span> <span class="k">as</span> <span class="n">Integer</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Dim</span> <span class="n">U</span> <span class="k">as</span> <span class="n">Integer</span>
 <span class="n">Function</span> <span class="n">Func1</span><span class="p">()</span>
     <span class="n">X</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">Dim</span> <span class="n">Y</span> <span class="o">=</span> <span class="mi">3</span> <span class="k">as</span> <span class="n">Integer</span>
@@ -339,7 +334,7 @@
 </pre></div>
 </div>
 <p>This code is transformed as such :</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Dim</span> <span class="n">global_1</span> <span class="k">as</span> <span class="n">Integer</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Dim</span> <span class="n">global_1</span> <span class="k">as</span> <span class="n">Integer</span>
 <span class="n">Function</span> <span class="n">Func_1</span><span class="p">()</span>
     <span class="n">local_1</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">Dim</span> <span class="n">local_2</span> <span class="o">=</span> <span class="mi">3</span> <span class="k">as</span> <span class="n">Integer</span>
@@ -370,6 +365,7 @@
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -416,14 +412,24 @@
 </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
