@@ -47,6 +47,7 @@ public class WebServer {
         Map<String, Object> model = new HashMap<>();
         String originalData = AnalysisController.getOriginalData(analysisId);
         model.put("original", originalData);
+        model.put("analysisId",analysisId);
         return renderTemplate(WebUtils.Templates.WORKANALYSIS,model);
     }
 }

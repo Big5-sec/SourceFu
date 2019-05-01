@@ -43,11 +43,12 @@
               <td class="align-middle">$analysis.name</td>
               <td class="align-middle">$analysis.filename</td>
               <td class="align-middle">
-                #if ( ! $analysis.currentStep )
-                  original
-                #else
-                  $analysis.currentStep
-                #end
+                <!-- #if ( ! $analysis.currentStep ) -->
+                <!--   original -->
+                <!-- #else -->
+                <!--   $analysis.currentStep.name -->
+                <!-- #end -->
+                original
               </td>
               <td class="align-middle"><a role="button" class="btn btn-info" href="/editAnalysis/$analysis.id"><i data-feather="settings"></i></a></td>
               <td class="align-middle"><button onclick="delAnalysis('$analysis.id')" class="btn btn-danger"><i data-feather="trash"></i></button></td>

@@ -3,6 +3,7 @@ import static spark.Spark.*;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.MultipartConfigElement;
@@ -49,19 +50,31 @@ public class APIServer {
                                     return "{\"status\":\"FAIL\"}";
                                 }
                             });
-                        /*
+                        
                         //createNewStep
                         // used to create a new step in the analysis
                         post("/createNewStep", (request,response) -> {
+                        	System.out.println("calling new step");
                                 request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"));
-                                try (InputStream is = request.raw().getPart("uploaded_file").getInputStream()) {
-                                        //use request
-                                 }       
-
-                                response.type("application/json");
-                                return "{\"upload\":\"OK\"}";
+                                InputStream stepNameStream = request.raw().getPart("name").getInputStream();
+                                String stepName = IOUtils.toString(stepNameStream);
+                                
+                                InputStream stepCodeStream = request.raw().getPart("code").getInputStream();
+                                String stepCode = IOUtils.toString(stepCodeStream);
+                                
+                                InputStream analysisIdStream = request.raw().getPart("analysisId").getInputStream();
+                                String analysisId = IOUtils.toString(analysisIdStream);
+                               
+                                int i = AnalysisController.setNewStep(analysisId, stepName, stepCode);
+                                if(i == 0) {
+                                    response.type("application/json");
+                                    return "{\"status\":\"OK\"}";
+                                } else {
+                                    response.type("application/json");
+                                    return "{\"status\":\"FAIL\"}";
+                                }
                             });
-						*/
+						
                         //getAnalysisSteps
                         // used to get all steps of an analysis
                         get("/AnalysisSteps/:analysisId", (request,response) -> {

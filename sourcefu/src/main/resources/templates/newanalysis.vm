@@ -96,9 +96,7 @@
       function newAnalysis() {
       console.log("calling newanalysis");
       var input = document.getElementById('analysisfile');
-      console.log("tada");
-      var data = new FormData();
-      
+      var data = new FormData();     
       data.append('analysisfile', input.files[0]);
       data.append('analysisname', document.getElementById('analysisname').value);
       data.append('analysislanguage', document.getElementById('analysislanguage').value);

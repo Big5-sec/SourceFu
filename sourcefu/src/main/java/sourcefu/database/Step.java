@@ -9,10 +9,17 @@ import dev.morphia.annotations.Id;
 public class Step {
 	@Id
 	private ObjectId id;
-	private int analysisId;
+	private String analysisId;
 	private String name;
 	private String data;
 	private Step parentStep;
+	
+	public Step(String analysisId, String name, String data, Step parentStep) {
+		this.analysisId = analysisId;
+		this.name = name;
+		this.data = data;
+		this.parentStep = parentStep;
+	}
 	
 	public ObjectId getId() {
 		return id;
@@ -20,10 +27,10 @@ public class Step {
 	public void setId(ObjectId id) {
 		this.id = id;
 	}
-	public int getAnalysisId() {
+	public String getAnalysisId() {
 		return analysisId;
 	}
-	public void setAnalysisId(int analysisId) {
+	public void setAnalysisId(String analysisId) {
 		this.analysisId = analysisId;
 	}
 	public String getName() {

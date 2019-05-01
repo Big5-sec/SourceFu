@@ -49,5 +49,19 @@ public class AnalysisController {
 		}
 		return 1;
 	}
+
+	public static int setNewStep(String analysisId, String stepName, String stepCode) {
+		ds = dbHelper.getDataStore();
+		ObjectId id = new ObjectId(analysisId);
+		Analysis analysis = ds.createQuery(Analysis.class).field("id").equal(id).get();
+		if (analysis == null) {
+			return 1;
+		}
+		
+		Step step = new Step(analysisId, stepName, stepCode, null);
+		analysis.addStepAndSetCurrent(step);
+		ds.save(analysis);
+		return 0;
+	}
 	
 }

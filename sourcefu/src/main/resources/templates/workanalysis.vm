@@ -11,7 +11,7 @@
     <link href="/test_css.css" rel="stylesheet">
     <link href="/js/merge.css" rel="stylesheet">
     <link href="/js/prism.css" rel="stylesheet">
-    <title>SourceFu</title>
+    <title>SourceFu: work view</title>
   </head>
   <body style="font-size:0.8rem">
     <nav class="navbar navbar-dark static-top bg-dark p-0 flex-md-nowrap">
@@ -26,22 +26,61 @@
           <a class="nav-link" id="work-tab" data-target="#work" data-toggle="tab" href="#work" role="tab" aria-controls="work" aria-selected="false">Work View</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="step-tab" data-target="#steps" data-toggle="tab" href="#steps" role="tab" aria-controls="steps" aria-selected="false">Diff View</a>
+          <a class="nav-link" id="step-tab" data-target="#steps" data-toggle="tab" href="#steps" role="tab" aria-controls="steps" aria-selected="false">Steps</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="step-tab" data-target="#diff" data-toggle="tab" href="#steps" role="tab" aria-controls="steps" aria-selected="false">Diff View</a>
         </li>
       </ul>
+
+      <!--overview pane-->
 
       <div class="tab-content">
         <div id="view" class="tab-pane fade show active" role="tabpanel" aria-labelledby="view-tab">
           <br>
-          <h4>deobfuscated</h4>
+          <h4>File Information</h4>
+          <table class="table table-bordered">
+            <tbody>
+              <tr>
+                <th>filename</th>
+                <td>todo</td>
+                <th>language</th>
+                <td>VBA</td>
+              </tr>
+              <tr>
+                <th>SHA-512</th>
+                <td colspan="3">deadbeeffffffffffffffffffffffff</td>
+              </tr>
+              <tr>
+                <th>automated analysis's SHA-512</th>
+                <td colspan="3">acdcacddcacdcacdacd</td>
+              </tr>
+              <tr>
+                <th>deobfuscated SHA-512</th>
+                <td colspan="3">no deobfuscated step set</td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <h4>Original</h4>
+          <pre class="pre-scrollable line-numbers"><code class="language-javascript">$original</code></pre>
+          <h4>Deobfuscated</h4>
           #if ( ! $deobfuscated )
-          <pre><code class="language-javascript">not analyzed already..</code></pre>
+          <pre><code class="language-javascript">no step set as deobfuscated point</code></pre>
           #else
           <pre class="pre-scrollable line-numbers"><code class="language-javascript">$deobfuscated</code></pre>
-         #end
-          <h4>original</h4>
-          <pre class="pre-scrollable line-numbers"><code class="language-javascript">$original</code></pre>
+          #end
+          <h4>Current step</h4>
+          #if ( ! $current_step )
+          <pre><code class="language-javascript">no current step</code></pre>
+          #else
+          <pre class="pre-scrollable line-numbers"><code class="language-javascript">$current_step</code></pre>
+          #end
         </div>
+
+
+        <!--work pane -->
+
         <div id="work" class="tab-pane fade" role="tabpanel" aria-labelledby="work-tab">
           <div class="float-left">
             #if (! $steps)
@@ -56,8 +95,8 @@
             #end
           </div>
           <div class="float-right">
-            <textarea></textarea>
-            <a href="#">new step</a>
+            <textarea id="new-step-name" class="form-control form-control-sm"></textarea>
+            <a href="#" onclick="setNewStep()">new step</a>
           </div>
 
           #if ( ! $deobfuscated )
@@ -79,6 +118,8 @@
               <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Dead Code elimination</a>
             </li>
           </ul>
+
+          
           <div class="tab-content" id="pills-tabContent">
             <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
               <br>
@@ -90,13 +131,47 @@
               
             </div>
             <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">...</div>
-            <div id="output123"></div>
           </div>
+          <div id="output123"></div>
         </div>
+
+        <!--steps pane-->        
         <div id="steps" class="tab-pane fade" role="tabpanel" aria-labelledby="step-tab">
           <div id="viewmerge"></div>
         </div>
+
+        <!--diff pane-->        
+        <div id="steps" class="tab-pane fade" role="tabpanel" aria-labelledby="step-tab">
+          <div id="viewmerge"></div>
+        </div>
+
+        
       </div>
+
+
+
+      <!--this is a pop up for user interaction-->        
+      <!-- <div class="modal fade" id="my-popup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"> -->
+      <!--   <div class="modal-dialog" role="document"> -->
+      <!--     <div class="modal-content"> -->
+      <!--       <div class="modal-header" style="background:#e85e6c;"> -->
+      <!--         <h5 class="modal-title" id="message-label">Error</h5> -->
+      <!--         <button type="button" class="close" data-dismiss="modal" aria-label="Close"> -->
+      <!--           <span aria-hidden="true">&times;</span> -->
+      <!--         </button> -->
+      <!--       </div> -->
+      <!--       <div class="modal-body" id="my-message"> -->
+      <!--         there was an error creating the analysis. -->
+      <!--       </div> -->
+      <!--     </div> -->
+      <!--   </div> -->
+      <!-- </div> -->
+
+
+
+      
+
+      
     </main>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"  crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
@@ -107,6 +182,7 @@
     <script src="/hehe_fichiers/diff_match_patch.js"></script>
     <script src="/hehe_fichiers/merge.js"></script>
     <script>
+      var analysisId = "$analysisId";
       var mainEditor;
       var mergeEditor;
       function initMainCodeEditor(){
@@ -189,32 +265,86 @@ function resize(mergeView) {
   mergeView.wrap.style.height = height + "px";
       }
 
-function gatherCode() {      
-      var originalDiv = $('#workpane');
-      var editor = originalDiv.next('.CodeMirror')[0].CodeMirror;
-      return editor.getTextArea().innerText;
-      }
 
-      function deletecomments() {
-      var out = document.querySelector("#output123");
-      out.innerHTML = "<pre> Loading... please wait </pre>";
-      var currentcode = gatherCode();
-      var data = new FormData();
-      data.append('input', currentcode);
-      fetch('/api/actions/deleteComments', {
-      method: 'POST',
-      body:data
-      }).then(function(response) {
-      return response.json();
-      }).then(function(myJson) {
-      if(myJson.status == 'OK') {
-      out.innerHTML = "<pre style=\"background:grey;\">"+myJson.output+"</pre>";
-      } else {
-      out.innerHTML = "<pre>an error occured!</pre>";
-      }
-      })
+//the following are editor functions
+
+
+//this function permits to gather the code within the editor of the web page
+function gatherCode() {      
+    var originalDiv = $('#workpane');
+    var editor = originalDiv.next('.CodeMirror')[0].CodeMirror;
+    return editor.getTextArea().innerText;
 }
-     
+
+//function setting a new step for the analysis
+// it gathers the value of the text area next to the "new step" link
+// then realizes some fetch to update the internal status of the analysis
+// finally, the list of steps for select is updated. 
+function setNewStep() {
+    var stepName = $('#new-step-name')
+    if (stepName == ''){
+        $('#my-message').innerHTML = "cannot set a new step with an empty name"
+        $("#my-popup").modal();
+        return;
+    }
+    var stepCode = gatherCode();
+    var data = new FormData();
+    data.append('code', stepCode);
+    data.append('name',stepName);
+    data.append('analysisId',analysisId);
+    fetch('/api/analysis/createNewStep', {
+      method: 'POST',
+        body:data
+    }).then(function(response) {
+        return response.json();
+    }).then(function(myJson) {
+        if(myJson.status == 'OK') {
+            $('#my-message').innerHTML = "cannot set a new step with an empty name"
+        } else {
+            $('#message-label').innerHTML = "OK"
+            $('#my-message').innerHTML = "step added"
+        }
+        $("#my-popup").modal();
+    })     
+}
+
+function loadAvailableSteps() {
+    fetch('api/analysis/AnalysisSteps/'+analysisId).then(function(response) {
+      return response.json();
+    }).then(function(myJson) {
+        if(myJson.status == 'OK') {
+            out.innerHTML = "<pre style=\"background:grey;\">"+myJson.output+"</pre>";
+        } else {
+            out.innerHTML = "<pre>an error occured!</pre>";
+        }
+    })  
+}    
+
+
+
+
+
+//the following are operations functions
+
+function deletecomments() {
+    var out = document.querySelector("#output123");
+    out.innerHTML = "<pre> Loading... please wait </pre>";
+    var currentcode = gatherCode();
+    var data = new FormData();
+    data.append('input', currentcode);
+    fetch('/api/actions/deleteComments', {
+        method: 'POST',
+        body:data
+    }).then(function(response) {
+        return response.json();
+    }).then(function(myJson) {
+        if(myJson.status == 'OK') {
+            out.innerHTML = "<pre style=\"background:grey;\">"+myJson.output+"</pre>";
+        } else {
+            out.innerHTML = "<pre>an error occured!</pre>";
+        }
+    })     
+}          
 </script>
 </body>
 </html>

@@ -1,5 +1,8 @@
 package sourcefu.database;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
 import dev.morphia.annotations.Entity;
@@ -17,6 +20,7 @@ public class Analysis {
 		unanalysed, ongoing, finished;
 	}
 	private Step currentStep;
+	List<Step> steps = new ArrayList<Step>();
 	
 	public Analysis() {}
 	
@@ -71,12 +75,18 @@ public class Analysis {
 		this.currentStep = currentStep;
 	}
 
-	public String getOriginalFilename() {
+	public String getFilename() {
 		return filename;
 	}
 
-	public void setOriginalFilename(String originalFilename) {
+	public void setFilename(String originalFilename) {
 		this.filename = originalFilename;
 	}
 
+	public void addStepAndSetCurrent(Step step) {
+		this.steps.add(step);
+		setCurrentStep(step);
+	}
+	
+	
 }
