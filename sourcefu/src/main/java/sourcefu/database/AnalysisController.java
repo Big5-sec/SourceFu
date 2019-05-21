@@ -38,6 +38,12 @@ public class AnalysisController {
 		return analysis.getOriginalData();
 	}
 		
+	public static Analysis getAnalysisById(String analysisId) {
+		ds = dbHelper.getDataStore();
+		ObjectId id = new ObjectId(analysisId);
+		Analysis analysis = ds.createQuery(Analysis.class).field("id").equal(id).get();
+		return analysis;
+	}
 	
 	public static int deleteAnalysis(String analysisId) {
 		ds = dbHelper.getDataStore();
@@ -57,9 +63,10 @@ public class AnalysisController {
 		if (analysis == null) {
 			return 1;
 		}
-		
+		System.out.println("setting new step with " + stepName + " ; " + stepCode);
 		Step step = new Step(analysisId, stepName, stepCode, null);
 		analysis.addStepAndSetCurrent(step);
+		System.out.println(analysis.getCurrentStep());
 		ds.save(analysis);
 		return 0;
 	}

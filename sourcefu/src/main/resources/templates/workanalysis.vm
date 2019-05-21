@@ -29,7 +29,7 @@
           <a class="nav-link" id="step-tab" data-target="#steps" data-toggle="tab" href="#steps" role="tab" aria-controls="steps" aria-selected="false">Steps</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="step-tab" data-target="#diff" data-toggle="tab" href="#steps" role="tab" aria-controls="steps" aria-selected="false">Diff View</a>
+          <a class="nav-link" id="step-tab" data-target="#diff" data-toggle="tab" href="#diff" role="tab" aria-controls="steps" aria-selected="false">Diff View</a>
         </li>
       </ul>
 
@@ -71,10 +71,10 @@
           <pre class="pre-scrollable line-numbers"><code class="language-javascript">$deobfuscated</code></pre>
           #end
           <h4>Current step</h4>
-          #if ( ! $current_step )
+          #if ( ! $current_step_code )
           <pre><code class="language-javascript">no current step</code></pre>
           #else
-          <pre class="pre-scrollable line-numbers"><code class="language-javascript">$current_step</code></pre>
+          <pre class="pre-scrollable line-numbers"><code class="language-javascript">$current_step_code</code></pre>
           #end
         </div>
 
@@ -137,11 +137,12 @@
 
         <!--steps pane-->        
         <div id="steps" class="tab-pane fade" role="tabpanel" aria-labelledby="step-tab">
-          <div id="viewmerge"></div>
+          <div id="my-diagram-div"
+               style="width:800px; height:400px; background-color: #DAE4E4;"></div>
         </div>
 
         <!--diff pane-->        
-        <div id="steps" class="tab-pane fade" role="tabpanel" aria-labelledby="step-tab">
+        <div id="diff" class="tab-pane fade" role="tabpanel" aria-labelledby="step-tab">
           <div id="viewmerge"></div>
         </div>
 
@@ -176,6 +177,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"  crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"  crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/gojs/release/go.js" crossorigin="anonymous"></script>
     <script src="/js/codemirror.js"></script>
     <script src="/js/prism.js"></script>
     <script src="/js/xml.js"></script>
@@ -206,10 +208,15 @@
         initMainCodeEditor();
       });
 
-       // Only load editors if tab has been clicked
       $('#maintabs > li > a[data-target="#steps"]').on('shown.bs.tab', function(e){
+      make_steps_diagram();
+      })
+
+       // Only load editors if tab has been clicked
+      $('#maintabs > li > a[data-target="#diff"]').on('shown.bs.tab', function(e){
         see();
-      }) 
+      })
+      
     });
              
 var value, orig1, orig2, dv, hilight= true;
@@ -271,9 +278,7 @@ function resize(mergeView) {
 
 //this function permits to gather the code within the editor of the web page
 function gatherCode() {      
-    var originalDiv = $('#workpane');
-    var editor = originalDiv.next('.CodeMirror')[0].CodeMirror;
-    return editor.getTextArea().innerText;
+    return mainEditor.getValue();
 }
 
 //function setting a new step for the analysis
@@ -281,7 +286,7 @@ function gatherCode() {
 // then realizes some fetch to update the internal status of the analysis
 // finally, the list of steps for select is updated. 
 function setNewStep() {
-    var stepName = $('#new-step-name')
+    var stepName = $.trim($('#new-step-name').val());
     if (stepName == ''){
         $('#my-message').innerHTML = "cannot set a new step with an empty name"
         $("#my-popup").modal();
@@ -303,6 +308,7 @@ function setNewStep() {
         } else {
             $('#message-label').innerHTML = "OK"
             $('#my-message').innerHTML = "step added"
+            document.location.reload(true);
         }
         $("#my-popup").modal();
     })     
@@ -344,7 +350,43 @@ function deletecomments() {
             out.innerHTML = "<pre>an error occured!</pre>";
         }
     })     
-}          
+}
+
+function make_steps_diagram() {      
+var $ = go.GraphObject.make;
+var myDiagram =
+  $(go.Diagram, "my-diagram-div",
+    {
+      "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
+    });
+
+// the template we defined earlier
+myDiagram.nodeTemplate =
+  $(go.Node, "Horizontal",
+    { background: "#44CCFF" },
+    $(go.Picture,
+      { margin: 10, width: 50, height: 50, background: "red" },
+      new go.Binding("source")),
+    $(go.TextBlock, "Default Text",
+      { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
+      new go.Binding("text", "name"))
+  );
+
+var model = $(go.TreeModel);
+model.nodeDataArray =
+[ // the "key" and "parent" property names are required,
+  // but you can add whatever data properties you need for your app
+  { key: "1",              name: "Don Meow"    },
+  { key: "2", parent: "1", name: "Demeter"     },
+  { key: "3", parent: "1", name: "Copricat"    },
+  { key: "4", parent: "3", name: "Jellylorum"  },
+  { key: "5", parent: "3", name: "Alonzo"       },
+  { key: "6", parent: "2", name: "Munkustrap"  }
+];
+myDiagram.model = model;      
+}      
+
+      
 </script>
 </body>
 </html>

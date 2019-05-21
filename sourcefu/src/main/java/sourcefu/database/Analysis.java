@@ -88,5 +88,8 @@ public class Analysis {
 		setCurrentStep(step);
 	}
 	
+	public List<Step> getSteps() {
+		return this.steps;
+	}
 	
 }

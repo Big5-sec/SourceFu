@@ -11,13 +11,15 @@ public class Step {
 	private ObjectId id;
 	private String analysisId;
 	private String name;
-	private String data;
+	private String code;
 	private Step parentStep;
 	
-	public Step(String analysisId, String name, String data, Step parentStep) {
+	public Step() {}
+	
+	public Step(String analysisId, String name, String code, Step parentStep) {
 		this.analysisId = analysisId;
 		this.name = name;
-		this.data = data;
+		this.code = code;
 		this.parentStep = parentStep;
 	}
 	
@@ -39,11 +41,11 @@ public class Step {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getData() {
-		return data;
+	public String getCode() {
+		return code;
 	}
-	public void setData(String data) {
-		this.data = data;
+	public void setCode(String code) {
+		this.code = code;
 	}
 	public Step getParentStep() {
 		return parentStep;

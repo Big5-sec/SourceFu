@@ -45,9 +45,13 @@ public class WebServer {
 
     private static String renderWorkAnalysis(String analysisId){
         Map<String, Object> model = new HashMap<>();
-        String originalData = AnalysisController.getOriginalData(analysisId);
-        model.put("original", originalData);
+        Analysis analysis = AnalysisController.getAnalysisById(analysisId);
+        model.put("original", analysis.getOriginalData());
         model.put("analysisId",analysisId);
+        model.put("current_step_code", analysis.getCurrentStep().getCode());
+        model.put("steps", analysis.getSteps());
+        System.out.println("current step :" + analysis.getCurrentStep().toString());
+        System.out.println("current_step_code : " + analysis.getCurrentStep().getCode());
         return renderTemplate(WebUtils.Templates.WORKANALYSIS,model);
     }
 }

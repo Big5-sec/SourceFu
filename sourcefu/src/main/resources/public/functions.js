@@ -77,3 +77,19 @@ function deletecomments() {
         }
     })     
 }
+
+function make_steps_diagram() {
+    var GO = go.GraphObject.make;
+    var myDiagram =
+        GO(go.Diagram, "my-diagram-div"
+           {
+               "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
+           });
+    var myModel = GO(go.Model);
+    model.nodeDataArray = [
+        { key: "Alpha" },
+        { key: "Beta" },
+        { key: "Gamma" }
+    ];
+    myDiagram.model = myModel;
+}
