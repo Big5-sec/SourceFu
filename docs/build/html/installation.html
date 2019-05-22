@@ -1,0 +1,163 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Installation &#8212; SourceFu 0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="canonical" href="https://big5-security.com/sourcefu/installation.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quickstart" href="quickstart.html" />
+    <link rel="prev" title="Some state of the art" href="some state of the art.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+    <link rel="canonical" href="https://big5-security.com/sourcefu/installation.html"/>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">SourceFu has only been used for now on Linux, and does not provide much configuration. As such, only the command line part of SourceFu is officially supported to work on Windows. For a full working solution on Windows, the following instructions should be adapted by the fellowed reader</p>
+</div>
+<div class="section" id="cli">
+<h2>CLI<a class="headerlink" href="#cli" title="Permalink to this headline">¶</a></h2>
+<p>SourceFu comes as a full packaged jar file. As such, all you have to do to get SourceFu CLI running is a java-runtime on your machine. To do so, use your favorite package manager and use the command :</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ sudo &lt;your package manager&gt; install openjdk-&lt;version&gt;-jre
+</pre></div>
+</div>
+<p>You should now be able to launch SourceFu by doing in a terminal</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ java -jar sourcefu-&lt;version&gt;.jar --help
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">to add SourceFu to your path, the best is to copy SourceFu in your /bin directory, then create a bash wrapper in this directory with the command above</p>
+</div>
+</div>
+<div class="section" id="api-server-webserver">
+<h2>API server &amp; webserver<a class="headerlink" href="#api-server-webserver" title="Permalink to this headline">¶</a></h2>
+<p>To keep track of analyses and such across utilization, those two subcommands of SourceFu require a MongoDB database listening on the default port 27017 on localhost.</p>
+<p>To have MongoDB running, please follow your distribution recommandations (it would be a bit out of scope right now). For Ubuntu, it’s as simple as the following:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ sudo apt install mongodb
+</pre></div>
+</div>
+<p>You can then check MongoDB service status, and run the following to make sure your mongo is up :</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ mongo --eval &#39;db.runCommand({ connectionStatus: 1 })&#39;
+</pre></div>
+</div>
+<p>You can now launch SourceFu API server, and check for a line like such</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">qtp35369880</span><span class="o">-</span><span class="mi">16</span><span class="p">]</span> <span class="n">INFO</span> <span class="n">org</span><span class="o">.</span><span class="n">mongodb</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">connection</span> <span class="o">-</span> <span class="n">Opened</span> <span class="n">connection</span> <span class="p">[</span><span class="n">connectionId</span><span class="p">{</span><span class="n">localValue</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="n">serverValue</span><span class="p">:</span><span class="mi">44</span><span class="p">}]</span> <span class="n">to</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">27017</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="webserver">
+<h2>webserver<a class="headerlink" href="#webserver" title="Permalink to this headline">¶</a></h2>
+<p>The current state of SourceFu’s webserver requires the use of internet, in order for example to get Bootstrap CSS. This might change in the future…</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SourceFu</a></h1>
+
+
+
+<p class="blurb">a deobfuscation framework</p>
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="some state of the art.html">Some state of the art</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cli">CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api-server-webserver">API server &amp; webserver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#webserver">webserver</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user manual.html">User manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functioning.html">Functioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="planned features.html">Roadmap</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="some state of the art.html" title="previous chapter">Some state of the art</a></li>
+      <li>Next: <a href="quickstart.html" title="next chapter">Quickstart</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zilio Nicolas.
+      
+      |
+      <a href="_sources/installation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/js/codemirror.css">
     <link rel="stylesheet" href="/material.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/mermaid@7.0.0/dist/mermaid.dark.css" crossorigin="anonymous">
     <link href="/test_css.css" rel="stylesheet">
     <link href="/js/merge.css" rel="stylesheet">
     <link href="/js/prism.css" rel="stylesheet">
@@ -137,12 +138,17 @@
 
         <!--steps pane-->        
         <div id="steps" class="tab-pane fade" role="tabpanel" aria-labelledby="step-tab">
-          <div id="my-diagram-div"
-               style="width:800px; height:400px; background-color: #DAE4E4;"></div>
+          <p>This tab is currently a work in progress. The future idea will be to be able to select steps to work on, and to see what transformations have been done on the code from one step to another.</p>
+         <div id="mermaid-svg">
+         </div>
         </div>
 
         <!--diff pane-->        
         <div id="diff" class="tab-pane fade" role="tabpanel" aria-labelledby="step-tab">
+          <p>
+            This tab might disappear. The idea is to be able to have a diff view between 2 steps in the code. In fact, it's here because of the use of code mirror: this feature appeared quite interesting, so let's test it :).
+          </p>
+          
           <div id="viewmerge"></div>
         </div>
 
@@ -177,7 +183,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"  crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"  crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/gojs/release/go.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/mermaid@7.0.0/dist/mermaidAPI.js" crossorigin="anonymous"></script>
     <script src="/js/codemirror.js"></script>
     <script src="/js/prism.js"></script>
     <script src="/js/xml.js"></script>
@@ -202,6 +208,7 @@
       }
 
       $(document).ready(function(){
+      mermaidAPI.initialize({startOnLoad:false, cloneCssStyles:false});
         
       // Only load editors if tab has been clicked
       $('#maintabs > li > a[data-target="#work"]').on('shown.bs.tab', function(e){
@@ -209,7 +216,15 @@
       });
 
       $('#maintabs > li > a[data-target="#steps"]').on('shown.bs.tab', function(e){
-      make_steps_diagram();
+          var element = document.querySelector("#mermaid-svg");
+
+          var insertSvg = function(svgCode, bindFunctions){
+            element.innerHTML = svgCode;
+      };
+
+      var graphdefinition = "graph LR\nA --- B\nB-->C[fa:fa-ban forbidden]\nB-->D(fa:fa-spinner);"
+      
+          mermaidAPI.render('mermaid-svg',graphdefinition,insertSvg);
       })
 
        // Only load editors if tab has been clicked
@@ -222,7 +237,7 @@
 var value, orig1, orig2, dv, hilight= true;
       function initUI(panes) {
   if (value == null) return;
-  var target = document.getElementById("viewmerge");
+      var target = document.getElementById("viewmerge");
   target.innerHTML = "";
   mergeEditor = CodeMirror.MergeView(target, {
     value: value,
@@ -350,43 +365,7 @@ function deletecomments() {
             out.innerHTML = "<pre>an error occured!</pre>";
         }
     })     
-}
-
-function make_steps_diagram() {      
-var $ = go.GraphObject.make;
-var myDiagram =
-  $(go.Diagram, "my-diagram-div",
-    {
-      "undoManager.isEnabled": true // enable Ctrl-Z to undo and Ctrl-Y to redo
-    });
-
-// the template we defined earlier
-myDiagram.nodeTemplate =
-  $(go.Node, "Horizontal",
-    { background: "#44CCFF" },
-    $(go.Picture,
-      { margin: 10, width: 50, height: 50, background: "red" },
-      new go.Binding("source")),
-    $(go.TextBlock, "Default Text",
-      { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
-      new go.Binding("text", "name"))
-  );
-
-var model = $(go.TreeModel);
-model.nodeDataArray =
-[ // the "key" and "parent" property names are required,
-  // but you can add whatever data properties you need for your app
-  { key: "1",              name: "Don Meow"    },
-  { key: "2", parent: "1", name: "Demeter"     },
-  { key: "3", parent: "1", name: "Copricat"    },
-  { key: "4", parent: "3", name: "Jellylorum"  },
-  { key: "5", parent: "3", name: "Alonzo"       },
-  { key: "6", parent: "2", name: "Munkustrap"  }
-];
-myDiagram.model = model;      
-}      
-
-      
+}   
 </script>
 </body>
 </html>

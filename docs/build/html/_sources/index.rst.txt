@@ -12,6 +12,7 @@ Welcome to SourceFu's documentation!
     
    introduction
    some state of the art
+   installation
    quickstart
    user manual
    functioning
