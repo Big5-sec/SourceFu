@@ -15,7 +15,7 @@
 - [Introduction](#introduction)
 - [Quick start](#quick-start)
 - [Documentation](#documentation)
-- [Building SourceFu] (#building-sourcefu)
+- [Building SourceFu](#building-sourcefu)
 - [Wanna help](#wanna-help)
 - [Community](#community)
 - [Creators && Contributors](#creators-contributors)
