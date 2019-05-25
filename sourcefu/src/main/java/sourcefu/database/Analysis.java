@@ -91,5 +91,22 @@ public class Analysis {
 	public List<Step> getSteps() {
 		return this.steps;
 	}
+
+	public List<String> getStepsName() {
+		List<String> toReturn = new ArrayList<String>();
+		for(Step step: this.getSteps()) {
+			toReturn.add(step.getName());
+		}
+		return toReturn;
+	}
+	
+	public Step getStepbyName(String name) {
+		for(Step step: this.getSteps()) {
+			if (step.getName().equals(name)) {
+				return step;
+			}
+		}
+		return null;
+	}
 	
 }

@@ -14,6 +14,7 @@ import com.google.gson.GsonBuilder;
 import sourcefu.VBA.helpers.VBAAPIUtils;
 import sourcefu.database.Analysis;
 import sourcefu.database.AnalysisController;
+import sourcefu.database.Step;
 import spark.utils.IOUtils;
 
 public class APIServer {
@@ -38,11 +39,13 @@ public class APIServer {
 					String analysisData = IOUtils.toString(analysisFileStream);
 
 					Analysis analysis = new Analysis(analysisName, analysisLanguage, analysisFilename, analysisData);                                
-					int i = AnalysisController.createAnalysis(analysis);
-
-					//System.out.println(AnalysisController.getAnalyses());
-
-					if(i > 0) {
+					String ret = AnalysisController.createAnalysis(analysis);
+					if(ret.equals("fail")) {
+						response.type("application/json");
+						return "{\"status\":\"FAIL\"}";
+					}
+					int i = AnalysisController.setOriginalStep(ret, analysisData);
+					if(i == 0) {
 						response.type("application/json");
 						return "{\"status\":\"OK\"}";
 					} else {
@@ -83,8 +86,22 @@ public class APIServer {
 				});
 
 				get("/AnalysisStep/:analysisId/:stepId", (request, response) -> {
-					//TODO
-					return "OK";
+					System.out.println("calling get one step from analysis");
+					String analysisId = request.params(":analysisId");
+					String stepId = request.params(":stepId");
+					Step i = AnalysisController.getAnalysisStep(analysisId, stepId);
+					if(i != null) {
+						Map<String, String> output = new HashMap<String, String>();
+						output.put("status", "OK");
+						output.put("code",i.getCode());
+						GsonBuilder builder = new GsonBuilder();
+						Gson gson = builder.create();
+						String json = gson.toJson(output);
+						return json;
+					} else {
+						return "{\"status\":\"FAIL\",\"error\":\"step not found\"}";
+					}
+						
 				});
 
 				get("/delAnalysis/:analysisId", (request, response) -> {

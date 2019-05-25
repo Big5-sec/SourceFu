@@ -52,6 +52,11 @@ function loadAvailableSteps() {
     })  
 }    
 
+function loadStep() {
+    var stepList = $('#step-list');
+    var stepToLoad = stepList[0].value;
+    console.log(stepToLoad);
+}
 
 
 

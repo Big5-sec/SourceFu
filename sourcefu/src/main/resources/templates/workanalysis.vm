@@ -44,21 +44,15 @@
             <tbody>
               <tr>
                 <th>filename</th>
-                <td>todo</td>
+                <td>$analysis_filename</td>
+                <th>current step</th>
+                <td>$current_step.name</td>
                 <th>language</th>
                 <td>VBA</td>
               </tr>
               <tr>
                 <th>SHA-512</th>
-                <td colspan="3">deadbeeffffffffffffffffffffffff</td>
-              </tr>
-              <tr>
-                <th>automated analysis's SHA-512</th>
-                <td colspan="3">acdcacddcacdcacdacd</td>
-              </tr>
-              <tr>
-                <th>deobfuscated SHA-512</th>
-                <td colspan="3">no deobfuscated step set</td>
+                <td colspan="3">to be done...</td>
               </tr>
             </tbody>
           </table>
@@ -72,82 +66,78 @@
           <pre class="pre-scrollable line-numbers"><code class="language-javascript">$deobfuscated</code></pre>
           #end
           <h4>Current step</h4>
-          #if ( ! $current_step_code )
-          <pre><code class="language-javascript">no current step</code></pre>
-          #else
-          <pre class="pre-scrollable line-numbers"><code class="language-javascript">$current_step_code</code></pre>
-          #end
+          <pre class="pre-scrollable line-numbers"><code class="language-javascript">$current_step.code</code></pre>
         </div>
 
 
         <!--work pane -->
 
         <div id="work" class="tab-pane fade" role="tabpanel" aria-labelledby="work-tab">
-          <div class="float-left">
-            #if (! $steps)
-              <a href="#">load step</a>
-            #else
-              <select>
-                #foreach ($step in $steps)
-                <option>$step</option>
+          <br>
+          <div class="row justify-content-between">
+            #if (! $steps_name)
+            <div class="col-4">
+              <p>no step to load</pa>
+            </div>
+              #else
+              <div class="col-4">
+              <select id="step-list">
+                #foreach ($step_name in $steps_name)
+                <option value="$step_name">$step_name</option>
                 #end
               </select>
-              <a href="#">load step</a>
-            #end
-          </div>
-          <div class="float-right">
-            <textarea id="new-step-name" class="form-control form-control-sm"></textarea>
-            <a href="#" onclick="setNewStep()">new step</a>
+              <a href="#" onclick="loadStep()">load step</a>
+              </div>
+              #end
+              <div class="col-4">
+                <div class="form-group row">
+                  <input type="text" id="new-step-name" class="form-control col-sm-9 form-control-sm" placeholder="step name"/>                 
+                  <a href="#" onclick="setNewStep()" class="col-sm-3 col-form-label col-form-label-sm">new step</a>
+                </div>
+              </div>
           </div>
 
-          #if ( ! $deobfuscated )
-          <textarea id="workpane" >$original</textarea>
-          #else
-          <textarea id="workpane">$deobfuscated</textarea>
-          #end
+          <textarea id="workpane">$current_step.code</textarea>
           <br>
           
           <h4>operations</h4>
-          <ul class="nav nav-pills" id="pills-tab" role="tablist">
-            <li class="nav-item">
-              <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Delete Comments</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Rename Variables</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Dead Code elimination</a>
-            </li>
-          </ul>
-
-          
-          <div class="tab-content" id="pills-tabContent">
-            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-              <br>
-              <p>Delete comments</p>
-              <button type="button" class="btn btn-primary float-right" onclick="deletecomments()">Launch</button>
+          <form>
+            <div class="form-group row">
+              <label for="operation-select" class="col-form-label col-sm-1">Select the operation to run:</label>
+              <div class="col-sm-6">
+                <select class="form-control form-control-sm" id="operation-select">
+                  <option>delete comments</option>
+                  <option>rename variables (based on scope)</option>
+                  <option>dead code elimination</option>
+                  <option>beautify</option>
+                  <option>expression simplifications</option>
+                </select>
+              </div>
             </div>
-            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-              Renaming Variables :
-              
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="operation-save-step">
+              <label class="form-check-label" for="operation-save-step">
+                 automatically set the result of the operation as a new step?
+              </label>
             </div>
-            <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">...</div>
-          </div>
+            <button type="submit" class="btn btn-primary float-right">Launch</button>
+          </form>
+          <br>
           <div id="output123"></div>
         </div>
 
         <!--steps pane-->        
         <div id="steps" class="tab-pane fade" role="tabpanel" aria-labelledby="step-tab">
-          <p>This tab is currently a work in progress. The future idea will be to be able to select steps to work on, and to see what transformations have been done on the code from one step to another.</p>
+          <small>This tab is currently a work in progress. The future idea will be to be able to select steps to work on, and to see what transformations have been done on the code from one step to another.</small>
          <div id="mermaid-svg">
          </div>
         </div>
 
         <!--diff pane-->        
         <div id="diff" class="tab-pane fade" role="tabpanel" aria-labelledby="step-tab">
-          <p>
-            This tab might disappear. The idea is to be able to have a diff view between 2 steps in the code. In fact, it's here because of the use of code mirror: this feature appeared quite interesting, so let's test it :).
-          </p>
+          <small>
+            This tab might disappear. The idea is to be able to have a diff view between 2 steps in the code. In fact, it's here because of the use of code mirror: this feature appeared quite interesting, so let's test it :) in future...
+          </small>
           
           <div id="viewmerge"></div>
         </div>
@@ -329,22 +319,6 @@ function setNewStep() {
     })     
 }
 
-function loadAvailableSteps() {
-    fetch('api/analysis/AnalysisSteps/'+analysisId).then(function(response) {
-      return response.json();
-    }).then(function(myJson) {
-        if(myJson.status == 'OK') {
-            out.innerHTML = "<pre style=\"background:grey;\">"+myJson.output+"</pre>";
-        } else {
-            out.innerHTML = "<pre>an error occured!</pre>";
-        }
-    })  
-}    
-
-
-
-
-
 //the following are operations functions
 
 function deletecomments() {
@@ -365,7 +339,29 @@ function deletecomments() {
             out.innerHTML = "<pre>an error occured!</pre>";
         }
     })     
-}   
+}
+
+
+function loadStep() {
+    var stepList = $('#step-list');
+    var stepToLoad = stepList[0].value;
+    console.log(stepToLoad);
+    var myUrl = '/api/analysis/AnalysisStep/' + analysisId + '/' + stepToLoad;  
+    fetch(myUrl)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(myJson) {
+        console.log(myJson);
+        if(myJson.status == 'OK') {
+            mainEditor.doc.setValue(myJson.code);
+        } else {
+            console.log("an error occured!");
+        }
+      })      
+}
+
+      
 </script>
 </body>
 </html>

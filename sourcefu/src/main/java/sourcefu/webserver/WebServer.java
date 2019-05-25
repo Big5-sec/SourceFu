@@ -48,10 +48,9 @@ public class WebServer {
         Analysis analysis = AnalysisController.getAnalysisById(analysisId);
         model.put("original", analysis.getOriginalData());
         model.put("analysisId",analysisId);
-        model.put("current_step_code", analysis.getCurrentStep().getCode());
-        model.put("steps", analysis.getSteps());
-        System.out.println("current step :" + analysis.getCurrentStep().toString());
-        System.out.println("current_step_code : " + analysis.getCurrentStep().getCode());
+        model.put("current_step", analysis.getCurrentStep());
+        model.put("steps_name", analysis.getStepsName());
+        model.put("analysis_filename",analysis.getFilename());
         return renderTemplate(WebUtils.Templates.WORKANALYSIS,model);
     }
 }
