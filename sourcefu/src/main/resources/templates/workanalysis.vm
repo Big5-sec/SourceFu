@@ -48,7 +48,7 @@
                 <th>current step</th>
                 <td>$current_step.name</td>
                 <th>language</th>
-                <td>VBA</td>
+                <td>$analysis_language</td>
               </tr>
               <tr>
                 <th>SHA-512</th>
@@ -58,15 +58,27 @@
           </table>
           
           <h4>Original</h4>
+          #if($analysis_language == "VBA")
+          <pre class="pre-scrollable line-numbers"><code class="language-visual-basic">$original</code></pre>
+          #else
           <pre class="pre-scrollable line-numbers"><code class="language-javascript">$original</code></pre>
+          #end
           <h4>Deobfuscated</h4>
           #if ( ! $deobfuscated )
           <pre><code class="language-javascript">no step set as deobfuscated point</code></pre>
           #else
-          <pre class="pre-scrollable line-numbers"><code class="language-javascript">$deobfuscated</code></pre>
+              #if($analysis_language == "VBA")
+              <pre class="pre-scrollable line-numbers"><code class="language-visual-basic">$deobfuscated</code></pre>
+              #else
+              <pre class="pre-scrollable line-numbers"><code class="language-javascript">$deobfuscated</code></pre>
+              #end
           #end
           <h4>Current step</h4>
-          <pre class="pre-scrollable line-numbers"><code class="language-javascript">$current_step.code</code></pre>
+          #if($analysis_language == "VBA")
+          <pre class="pre-scrollable line-numbers"><code class="language-visual-basic">$current_step_code</code></pre>
+          #else
+          <pre class="pre-scrollable line-numbers"><code class="language-javascript">$current_step_code</code></pre>
+          #end
         </div>
 
 
@@ -97,11 +109,12 @@
               </div>
           </div>
 
-          <textarea id="workpane">$current_step.code</textarea>
+          <textarea id="workpane">$current_step_code</textarea>
           <br>
           
           <h4>operations</h4>
-          <form>
+          #if($analysis_language == "VBA")
+          <form class="mt-4" onsubmit="newOperation()">
             <div class="form-group row">
               <label for="operation-select" class="col-form-label col-sm-1">Select the operation to run:</label>
               <div class="col-sm-6">
@@ -110,7 +123,9 @@
                   <option>rename variables (based on scope)</option>
                   <option>dead code elimination</option>
                   <option>beautify</option>
-                  <option>expression simplifications</option>
+                  <option>empty blocks removal</option>
+                  <option>expressions simplifications</option>
+                  <option>full analysis</option>
                 </select>
               </div>
             </div>
@@ -120,9 +135,12 @@
                  automatically set the result of the operation as a new step?
               </label>
             </div>
-            <button type="submit" class="btn btn-primary float-right">Launch</button>
+            <button type="submit" value="submit" class="btn btn-primary float-right">Launch</button>
           </form>
-          <br>
+          #else
+          <p> no operations for now in JS</p>
+          #end
+          <br><br><br>
           <div id="output123"></div>
         </div>
 
@@ -147,22 +165,21 @@
 
 
 
-      <!--this is a pop up for user interaction-->        
-      <!-- <div class="modal fade" id="my-popup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"> -->
-      <!--   <div class="modal-dialog" role="document"> -->
-      <!--     <div class="modal-content"> -->
-      <!--       <div class="modal-header" style="background:#e85e6c;"> -->
-      <!--         <h5 class="modal-title" id="message-label">Error</h5> -->
-      <!--         <button type="button" class="close" data-dismiss="modal" aria-label="Close"> -->
-      <!--           <span aria-hidden="true">&times;</span> -->
-      <!--         </button> -->
-      <!--       </div> -->
-      <!--       <div class="modal-body" id="my-message"> -->
-      <!--         there was an error creating the analysis. -->
-      <!--       </div> -->
-      <!--     </div> -->
-      <!--   </div> -->
-      <!-- </div> -->
+      <div class="modal fade" id="my-popup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header" style="background:#e85e6c;">
+              <h5 class="modal-title" id="message-label">Error</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="my-message">
+              there was an error.
+            </div>
+          </div>
+        </div>
+      </div>
 
 
 
@@ -177,12 +194,15 @@
     <script src="/js/codemirror.js"></script>
     <script src="/js/prism.js"></script>
     <script src="/js/xml.js"></script>
+    <script src="/js/javascript.js"></script>
+     <script src="/js/vb.js"></script>
     <script src="/hehe_fichiers/diff_match_patch.js"></script>
     <script src="/hehe_fichiers/merge.js"></script>
     <script>
       var analysisId = "$analysisId";
       var mainEditor;
       var mergeEditor;
+      var lastOperation;
       function initMainCodeEditor(){
       if(mainEditor instanceof CodeMirror){
 				mainEditor.refresh();
@@ -191,7 +211,12 @@
         var el = document.getElementById("workpane");    
         mainEditor = CodeMirror.fromTextArea(el, {
           lineNumbers: true,
-          theme: "material"
+      theme: "material",
+      #if($analysis_language == "VBA")
+      mode: "vb"
+      #else
+      mode: "javascript"
+      #end
       });
       mainEditor.setSize("100%",$(window).height()/2);
       }
@@ -293,7 +318,7 @@ function gatherCode() {
 function setNewStep() {
     var stepName = $.trim($('#new-step-name').val());
     if (stepName == ''){
-        $('#my-message').innerHTML = "cannot set a new step with an empty name"
+        $('#my-message')[0].innerHTML = "cannot set a new step with an empty name"
         $("#my-popup").modal();
         return;
     }
@@ -308,15 +333,13 @@ function setNewStep() {
     }).then(function(response) {
         return response.json();
     }).then(function(myJson) {
-        if(myJson.status == 'OK') {
-            $('#my-message').innerHTML = "cannot set a new step with an empty name"
-        } else {
-            $('#message-label').innerHTML = "OK"
-            $('#my-message').innerHTML = "step added"
-            document.location.reload(true);
-        }
+      if(myJson.status == 'OK') {
+      document.location.reload(true);
+      } else {
+      $('#my-message').innerHTML = "cannot set a new step with an empty name"
+      }
         $("#my-popup").modal();
-    })     
+      })  
 }
 
 //the following are operations functions
@@ -361,6 +384,65 @@ function loadStep() {
       })      
 }
 
+function newOperation() {
+    var out = document.querySelector("#output123");
+    out.innerHTML = "<pre style=\"background:grey;\"> Loading... please wait </pre>";      
+    var operation = $('#operation-select')[0].value;
+    var code = gatherCode();
+    var setNewStep = $('#operation-save-step')[0].checked;  
+    var data = new FormData();
+    data.append('operation', operation);
+    data.append('code', code);
+    data.append('setnewstep', setNewStep);
+    data.append('analysisId',analysisId);
+    fetch('/api/actions/newOperation', {
+      method: 'POST',
+      body: data
+    }).then(function(response) {
+        return response.json();
+    }).then(function(myJson) {
+      if(myJson.status == 'OK') {
+      if(setNewStep){
+            window.location.reload();
+      } else {
+        out.innerHTML = "<pre id=\"operation-output\" style=\"background:grey;\">"+myJson.output+"</pre><div class=\"row\"><div class=\"col-9\"></div><div class=\"col-2\"><button type=\"button\" class=\"btn btn-primary\" onclick=\"setNewStepFromOperation()\">keep as a new step</button></div><div class=\"col-1\"><button type=\"button\" class=\"btn btn-primary\" onclick=\"discardOperation()\">discard</button></div></div>";
+        lastOperation = operation;        
+      }
+        
+        } else {
+            out.innerHTML = "<pre style=\"background:grey;\">an error occured!</pre>";
+        }
+    })     
+    event.preventDefault();  
+        }
+
+function discardOperation() {
+   var out = document.querySelector("#output123");
+        out.innerHTML = "";
+}
+
+function gatherOperationCode() {
+    return $('#operation-output')[0].innerHTML;
+}    
+
+function setNewStepFromOperation() {
+    var stepCode = gatherOperationCode();
+    var data = new FormData();
+    data.append('code', stepCode);
+    data.append('name',"post "+ lastOperation);
+    data.append('analysisId',analysisId);
+    fetch('/api/analysis/createNewStep', {
+      method: 'POST',
+        body:data
+    }).then(function(response) {
+        return response.json();
+    }).then(function(myJson) {
+      if(myJson.status == 'OK') {
+      document.location.reload(true);
+      } 
+      $("#my-popup").modal();
+      })  
+}            
       
 </script>
 </body>

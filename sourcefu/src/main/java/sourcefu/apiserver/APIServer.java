@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.servlet.MultipartConfigElement;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -37,7 +39,23 @@ public class APIServer {
 
 					InputStream analysisFileStream = request.raw().getPart("analysisfile").getInputStream();
 					String analysisData = IOUtils.toString(analysisFileStream);
-
+					analysisData = StringEscapeUtils.unescapeHtml(analysisData);
+					
+					if(analysisLanguage.contains("Try to auto-determine")) {
+						String language = new APIServerUtils().getSampleLanguage(analysisData);
+						if (!language.equals("undefined")) {
+							analysisLanguage = language;
+							System.out.println("detected language for analysis : " + analysisLanguage);
+						} else {
+							response.type("application/json");
+							return "{\"status\":\"FAIL\",\"error\":\"could not set language automatically\",\"error_id\":\"3\"}";
+						}
+					}
+					
+					if(analysisLanguage.equals("Javascript")) {  //TODO: we should set the language as part of an enum instead
+						analysisLanguage = "JS";
+					}
+					
 					Analysis analysis = new Analysis(analysisName, analysisLanguage, analysisFilename, analysisData);                                
 					String ret = AnalysisController.createAnalysis(analysis);
 					if(ret.equals("fail")) {
@@ -64,6 +82,7 @@ public class APIServer {
 
 					InputStream stepCodeStream = request.raw().getPart("code").getInputStream();
 					String stepCode = IOUtils.toString(stepCodeStream);
+					stepCode = StringEscapeUtils.unescapeHtml(stepCode);
 
 					InputStream analysisIdStream = request.raw().getPart("analysisId").getInputStream();
 					String analysisId = IOUtils.toString(analysisIdStream);
@@ -93,7 +112,7 @@ public class APIServer {
 					if(i != null) {
 						Map<String, String> output = new HashMap<String, String>();
 						output.put("status", "OK");
-						output.put("code",i.getCode());
+						output.put("code",StringEscapeUtils.escapeHtml(i.getCode()));
 						GsonBuilder builder = new GsonBuilder();
 						Gson gson = builder.create();
 						String json = gson.toJson(output);
@@ -118,26 +137,87 @@ public class APIServer {
 
 			});
 			path("/actions", () -> {
-				post("/deleteComments", (request, response) -> {
+				/* the following code is a bit outdated, don't care*/
+//				post("/deleteComments", (request, response) -> {
+//					request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"));
+//					InputStream inputStream = request.raw().getPart("input").getInputStream();
+//					String input = IOUtils.toString(inputStream);
+//					VBAAPIUtils api = new VBAAPIUtils();
+//					String data = api.APIDeleteComments(input);
+//
+//					if(data != null) {
+//						Map<String, String> output = new HashMap<String, String>();
+//						output.put("status", "OK");
+//						output.put("output",data);
+//						GsonBuilder builder = new GsonBuilder();
+//						Gson gson = builder.create();
+//						String json = gson.toJson(output);
+//						return json;
+//					} else {
+//						return "{\"status\":\"FAIL\",\"output\":\"\"}"; 
+//					}
+//
+//				});
+				
+				post("/newOperation", (request, response) -> {
 					request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"));
-					InputStream inputStream = request.raw().getPart("input").getInputStream();
-					String input = IOUtils.toString(inputStream);
-					VBAAPIUtils api = new VBAAPIUtils();
-					String data = api.APIDeleteComments(input);
+					InputStream codeStream = request.raw().getPart("code").getInputStream();
+					String code = IOUtils.toString(codeStream);
+					code = StringEscapeUtils.unescapeHtml(code);
 
-					if(data != null) {
+					InputStream operationStream = request.raw().getPart("operation").getInputStream();
+					String operation = IOUtils.toString(operationStream);
+
+					InputStream setNewStepStream = request.raw().getPart("setnewstep").getInputStream();
+					String setNewStepStr = IOUtils.toString(setNewStepStream);
+					boolean setNewStep = false;
+					if(setNewStepStr.equals("true")) {
+						setNewStep = true;
+					}
+					
+					InputStream analysisIdStream = request.raw().getPart("analysisId").getInputStream();
+					String analysisId = IOUtils.toString(analysisIdStream);
+					
+					Analysis analysis = AnalysisController.getAnalysisById(analysisId);		
+					String newData = "";
+					if(analysis.getLanguage().equals("VBA")) {
+						VBAAPIUtils api = new VBAAPIUtils();
+						if(operation.equals("delete comments")) {
+							newData = api.APIDeleteComments(code);
+						} else if (operation.equals("rename variables (based on scope)")) {
+							newData = api.APIRename(code);
+						} else if (operation.equals("dead code elimination")) {
+							newData = api.APIDeadStore(code);
+						} else if (operation.equals("beautify")) {
+							newData = api.APIBeautify(code);
+						} else if (operation.equals("expressions simplifications")) {
+							newData = api.APIExprEval(code);
+						} else if (operation.equals("full analysis")) {
+							newData = api.APIFullAnalysis(code);
+						} else if (operation.equals("empty blocks removal")) {
+							newData = api.APIEMptyBlockRemoval(code);
+						} else {
+							return "{\"status\":\"FAIL\",\"error\":\"no operation matches the asked one\"}";
+						}
+					}
+					
+					if(setNewStep && newData.length()!=0) {
+						AnalysisController.setNewStep(analysisId, "post " + operation, newData);
+					}
+					
+					if(newData.length()!=0) {
 						Map<String, String> output = new HashMap<String, String>();
 						output.put("status", "OK");
-						output.put("output",data);
+						output.put("output",StringEscapeUtils.escapeHtml(newData));
 						GsonBuilder builder = new GsonBuilder();
 						Gson gson = builder.create();
 						String json = gson.toJson(output);
 						return json;
-					} else {
-						return "{\"status\":\"FAIL\",\"output\":\"\"}"; 
 					}
-
+					
+					return "{\"status\":\"FAIL\",\"output\":\"\"}";
 				});
+				
 			});   
 		});
 	}

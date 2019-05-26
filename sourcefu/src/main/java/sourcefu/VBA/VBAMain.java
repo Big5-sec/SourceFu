@@ -67,6 +67,10 @@ public class VBAMain {
 		}
 	}
 	
+	public VBAMain(String inputData) {
+		this.initial_data = inputData;
+	}
+	
 	public CharStream getCharStreamFromData(String data) {
 		CharStream input = CharStreams.fromString(data);
 		return input;

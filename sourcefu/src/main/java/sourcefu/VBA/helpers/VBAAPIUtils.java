@@ -6,7 +6,13 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import sourcefu.VBA.VBABeautifier;
 import sourcefu.VBA.VBACommentsDeleter;
+import sourcefu.VBA.VBADeadStore;
+import sourcefu.VBA.VBAEmptyBlockRemover;
+import sourcefu.VBA.VBAMain;
+import sourcefu.VBA.VBAPartialEvaluator;
+import sourcefu.VBA.VBARenamer;
 import sourcefu.VBA.antlr.VBALexer;
 import sourcefu.VBA.antlr.VBAParser;
 
@@ -36,5 +42,80 @@ public class VBAAPIUtils {
 	VBACommentsDeleter comm_deleter = new VBACommentsDeleter(tokens);
 	walker.walk(comm_deleter, tree);
 	return comm_deleter.getdata();
+	}
+	
+	public String APIDeadStore(String initial_data) {
+		String output = "";
+		while (true) { //multipass
+			CharStream input = getCharStreamFromData(initial_data);
+			CommonTokenStream tokens = generateTokens(input);
+			ParseTree tree = generateTree(tokens);
+			ParseTreeWalker walker = new ParseTreeWalker();
+			VBADeadStore deadstorer = new VBADeadStore(tokens);
+			walker.walk(deadstorer, tree);
+			deadstorer.deadstore();
+			if(deadstorer.getNumberModifications() == 0) {
+				output = deadstorer.getdata();
+				break;
+			}
+		}
+		return output;	
+	}	
+	
+	public String APIBeautify(String initial_data) {
+		CharStream input = getCharStreamFromData(initial_data);
+		CommonTokenStream tokens = generateTokens(input);
+		ParseTree tree = generateTree(tokens);
+		ParseTreeWalker walker = new ParseTreeWalker();
+		VBABeautifier beautifier = new VBABeautifier(tokens);
+		walker.walk(beautifier, tree);
+		return beautifier.getdata();
+	}
+	
+	public String APIRename(String initial_data) {
+		CharStream input = getCharStreamFromData(initial_data);
+		CommonTokenStream tokens = generateTokens(input);
+		ParseTree tree = generateTree(tokens);
+		ParseTreeWalker walker = new ParseTreeWalker();
+		VBARenamer renamer = new VBARenamer(tokens);
+		walker.walk(renamer, tree);
+		renamer.rename();
+		return renamer.getdata();
+	}
+	
+	public String APIExprEval(String initial_data) {
+		String output = "";
+		while (true) { //multipass
+			CharStream input = getCharStreamFromData(initial_data);
+			CommonTokenStream tokens = generateTokens(input);
+			ParseTree tree = generateTree(tokens);
+			VBAPartialEvaluator partialEval = new VBAPartialEvaluator(tree, tokens);
+			partialEval.partialeval();
+			if(partialEval.getNumberModifications() == 0) {
+				output = partialEval.getdata();
+				break;
+			}
+		}
+		return output;
+	}
+	
+	public String APISimplify(String initial_data) {
+		return "fail";
+	}
+	
+	public String APIFullAnalysis(String initial_data) {
+		VBAMain engine = new VBAMain(initial_data);
+		engine.run();
+		return engine.getdata();
+	}
+	
+	public String APIEMptyBlockRemoval(String initial_data) {
+		CharStream input = getCharStreamFromData(initial_data);
+		CommonTokenStream tokens = generateTokens(input);
+		ParseTree tree = generateTree(tokens);
+		ParseTreeWalker walker = new ParseTreeWalker();
+		VBAEmptyBlockRemover emptier = new VBAEmptyBlockRemover(tokens);
+		walker.walk(emptier, tree);
+		return emptier.getdata();
 	}
 }

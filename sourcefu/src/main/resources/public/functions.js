@@ -83,6 +83,19 @@ function deletecomments() {
     })     
 }
 
+function newOperation() {
+    var operation = $('#operation-select')[0].value;
+    var code = gatherCode();
+    var data = new FormData();
+    data.append('operation', operation);
+    data.append('code', code);
+    data.append('setnewstep', false);
+    fetch('/api/actions/newOperation', {
+      method: 'POST',
+      body: data
+    })
+}
+
 function make_steps_diagram() {
     var GO = go.GraphObject.make;
     var myDiagram =
