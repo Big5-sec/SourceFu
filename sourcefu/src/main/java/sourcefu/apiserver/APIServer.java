@@ -190,8 +190,10 @@ public class APIServer {
 							newData = api.APIDeadStore(code);
 						} else if (operation.equals("beautify")) {
 							newData = api.APIBeautify(code);
-						} else if (operation.equals("expressions simplifications")) {
+						} else if (operation.equals("expressions evaluation")) {
 							newData = api.APIExprEval(code);
+						} else if (operation.equals("cfg simplifications")) {
+							newData = api.APISimplify(code);
 						} else if (operation.equals("full analysis")) {
 							newData = api.APIFullAnalysis(code);
 						} else if (operation.equals("empty blocks removal")) {

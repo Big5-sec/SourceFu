@@ -10,6 +10,7 @@ import sourcefu.VBA.VBABeautifier;
 import sourcefu.VBA.VBACommentsDeleter;
 import sourcefu.VBA.VBADeadStore;
 import sourcefu.VBA.VBAEmptyBlockRemover;
+import sourcefu.VBA.VBAIFStmtSimplifier;
 import sourcefu.VBA.VBAMain;
 import sourcefu.VBA.VBAPartialEvaluator;
 import sourcefu.VBA.VBARenamer;
@@ -58,6 +59,7 @@ public class VBAAPIUtils {
 				output = deadstorer.getdata();
 				break;
 			}
+			initial_data = deadstorer.getdata();
 		}
 		return output;	
 	}	
@@ -91,16 +93,26 @@ public class VBAAPIUtils {
 			ParseTree tree = generateTree(tokens);
 			VBAPartialEvaluator partialEval = new VBAPartialEvaluator(tree, tokens);
 			partialEval.partialeval();
+			//System.out.println("modifications : "+ String.valueOf(partialEval.getNumberModifications()));
+			//System.out.println("data : ");
+			//System.out.println(partialEval.getdata());
 			if(partialEval.getNumberModifications() == 0) {
 				output = partialEval.getdata();
 				break;
 			}
+			initial_data = partialEval.getdata();
 		}
 		return output;
 	}
 	
 	public String APISimplify(String initial_data) {
-		return "fail";
+		CharStream input = getCharStreamFromData(initial_data);
+		CommonTokenStream tokens = generateTokens(input);
+		ParseTree tree = generateTree(tokens);
+		ParseTreeWalker walker = new ParseTreeWalker();
+		VBAIFStmtSimplifier ifsimplifier = new VBAIFStmtSimplifier(tokens);
+		walker.walk(ifsimplifier, tree);
+		return ifsimplifier.getdata();
 	}
 	
 	public String APIFullAnalysis(String initial_data) {

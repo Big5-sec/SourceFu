@@ -124,7 +124,8 @@
                   <option>dead code elimination</option>
                   <option>beautify</option>
                   <option>empty blocks removal</option>
-                  <option>expressions simplifications</option>
+                  <option>expressions evaluation</option>
+                  <option>cfg simplifications</option>
                   <option>full analysis</option>
                 </select>
               </div>

@@ -80,6 +80,7 @@ public class VBAIFStmtSimplifier extends VBAParserBaseListener {
 				return;
 			}
 			
+			//everything is false here
 			this.rewriter.replace(ctx.start, ctx.stop, "");
 			this.numberModifications+=1;
 		}

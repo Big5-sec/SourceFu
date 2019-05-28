@@ -159,8 +159,8 @@ public class VBAExprEvaluator extends VBAParserBaseListener {
 			this.NumberModifications +=1;
 		}
 		else if ((right instanceof String) && (left instanceof String)) {
-			String left1 = removeLastChar((String)left);
-			String right1 = removeFirstChar((String)right);
+			String left1 = (String)left;
+			String right1 = (String)right;
 			ctxvalue.setValue(ctx, left1 + right1);
 			RewriteOperation op = new RewriteOperation(ctx.start, ctx.stop, "\""+left1+right1+"\"");
 			operations.put(ctx.start, op);

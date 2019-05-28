@@ -559,6 +559,18 @@ public class VBACommonFunctionsEvaluator extends VBAParserBaseListener {
 				operations.put(ctx.start, op);
 				this.NumberModifications +=1;
 			}
+		} else if (ctx.standardFunctionKeyword().ABS()!=null) {
+			Object arg = ctxvalue.getValue(ctx.argumentList().argument(0));
+			if (arg instanceof Number) {
+				Number num = (Number) arg;
+				Integer value = (int)(num.doubleValue());
+				value = Math.abs(value);
+				ctxvalue.setValueNumber(ctx,value);
+				//rewriter.replace(ctx.start, ctx.stop, String.valueOf(value));
+				RewriteOperation op = new RewriteOperation(ctx.start, ctx.stop, String.valueOf(value));
+				operations.put(ctx.start, op);
+				this.NumberModifications +=1;
+			}
 		/*} else if (ctx.standardFunctionKeyword().ASCB()!=null) {
 			Object arg = ctxvalue.getValue(ctx.argumentList().argument(0));
 			if(arg instanceof String) {
