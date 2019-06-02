@@ -1,44 +1,201 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Functioning &#8212; SourceFu 0 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
-    <link rel="canonical" href="https://big5-security.com/sourcefu/functioning.html" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Functioning &mdash; SourceFu 0 documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="https://big5-sec.github.io/functioning.html"/>
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Roadmap" href="planned features.html" />
-    <link rel="prev" title="Web interface" href="Web Interface.html" />
+    <link rel="prev" title="Web interface" href="web interface.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
    
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-    <link rel="canonical" href="https://big5-security.com/sourcefu/functioning.html"/>
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
           
 
-          <div class="body" role="main">
+          
+            <a href="index.html">
+          
+
+          
+            
+            <img src="_static/SourceFu.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.01
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="some state of the art.html">Some state of the art</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user manual.html">User manual</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Functioning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#a-generic-methodology-for-sources-deobfuscation">A generic methodology for sources deobfuscation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#details">details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#simplifier-step">Simplifier step</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#comments-removal">Comments removal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#if-statements-simplifier">IF statements simplifier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#case-statements-simplifier">Case statements simplifier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#loops-simplifier">Loops simplifier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dead-code-elimination">Dead Code elimination</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vba-constants-replacement">VBA Constants replacement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#empty-blocks-removal">Empty blocks removal</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#partial-evaluation-step">Partial evaluation step</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#standard-functions-evaluation">Standard Functions evaluation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#expressions-simplification">Expressions simplification</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#constants-propagation">Constants propagation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#functions-evaluation">Functions evaluation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#beautifying-step">Beautifying Step</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#variables-renaming">Variables renaming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#beautifying">Beautifying</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#going-further">Going Further</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="planned features.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html">Releases</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SourceFu</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Functioning</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="functioning">
 <h1>Functioning<a class="headerlink" href="#functioning" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">this page is not up to date, consider it to be an overview of what is done in SourceFu</p>
+</div>
 <div class="section" id="a-generic-methodology-for-sources-deobfuscation">
 <h2>A generic methodology for sources deobfuscation<a class="headerlink" href="#a-generic-methodology-for-sources-deobfuscation" title="Permalink to this headline">¶</a></h2>
 <p>Partial Evaluation consists in interpreting only subparts of the AST of a source code in order to simplify them. With such a thing, interpretation does not have to be fully correct and extensive, but results are often more extensive than when one only uses regexes. The following paragraph aims at explaining the full approach behind SourceFu.</p>
@@ -364,88 +521,52 @@
 </div>
 
 
+           </div>
+           
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">SourceFu</a></h1>
-
-
-
-<p class="blurb">a deobfuscation framework</p>
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="some state of the art.html">Some state of the art</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user manual.html">User manual</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Functioning</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#a-generic-methodology-for-sources-deobfuscation">A generic methodology for sources deobfuscation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#details">details</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#simplifier-step">Simplifier step</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#partial-evaluation-step">Partial evaluation step</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#beautifying-step">Beautifying Step</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#going-further">Going Further</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="planned features.html">Roadmap</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="Web Interface.html" title="previous chapter">Web interface</a></li>
-      <li>Next: <a href="planned features.html" title="next chapter">Roadmap</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2018, Zilio Nicolas.
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-      |
-      <a href="_sources/functioning.rst.txt"
-          rel="nofollow">Page source</a>
+        <a href="planned features.html" class="btn btn-neutral float-right" title="Roadmap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="web interface.html" class="btn btn-neutral float-left" title="Web interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
+  
 
-    
+  <hr/>
 
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2019, Zilio Nicolas
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
     
-  </body>
+   
+
+</body>
 </html>

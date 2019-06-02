@@ -7,7 +7,7 @@ Welcome to SourceFu's documentation!
 ====================================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :caption: Contents:
     
    introduction
@@ -17,6 +17,7 @@ Welcome to SourceFu's documentation!
    user manual
    functioning
    planned features
+   releases
 
 ..
    contributing guide
