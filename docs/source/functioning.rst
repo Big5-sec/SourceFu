@@ -1,6 +1,8 @@
 Functioning
 ===========
 
+.. warning:: this page is not up to date, consider it to be an overview of what is done in SourceFu
+
 A generic methodology for sources deobfuscation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

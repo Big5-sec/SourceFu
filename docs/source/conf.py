@@ -54,7 +54,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'SourceFu'
-copyright = u'2018, Zilio Nicolas'
+copyright = u'2017-2019, Zilio Nicolas'
 author = u'Zilio Nicolas'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -90,16 +90,15 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
-
+html_theme = 'sphinx_rtd_theme'
+html_logo = '/home/nico/SourceFu/docs/source/imgs/SourceFu.png'
+html_show_sourcelink = False
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-html_theme_options = {"body_text_align":"justify",
-                      "description":"a deobfuscation framework",
-                      "show_powered_by":"false",
-                      "canonical_url":"https://big5-security.com/sourcefu/"
+html_theme_options = {"canonical_url":"https://big5-sec.github.io/",
+                      "logo_only":True
                       }
 
 # Add any paths that contain custom static files (such as style sheets) here,

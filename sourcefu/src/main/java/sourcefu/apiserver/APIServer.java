@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import sourcefu.JS.helpers.JSAPIUtils;
 import sourcefu.VBA.helpers.VBAAPIUtils;
 import sourcefu.database.Analysis;
 import sourcefu.database.AnalysisController;
@@ -75,7 +76,6 @@ public class APIServer {
 				//createNewStep
 				// used to create a new step in the analysis
 				post("/createNewStep", (request,response) -> {
-					System.out.println("calling new step");
 					request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"));
 					InputStream stepNameStream = request.raw().getPart("name").getInputStream();
 					String stepName = IOUtils.toString(stepNameStream);
@@ -201,6 +201,29 @@ public class APIServer {
 						} else {
 							return "{\"status\":\"FAIL\",\"error\":\"no operation matches the asked one\"}";
 						}
+					} else if(analysis.getLanguage().equals("JS")) {
+						JSAPIUtils api = new JSAPIUtils();
+						if(operation.equals("delete comments")) {
+							//newData = api.APIDeleteComments(code);
+						} else if (operation.equals("rename variables (based on scope)")) {
+							newData = api.APIRename(code);
+						} else if (operation.equals("dead code elimination")) {
+							//newData = api.APIDeadStore(code);
+						} else if (operation.equals("beautify")) {
+							//newData = api.APIBeautify(code);
+						} else if (operation.equals("expressions evaluation")) {
+							//newData = api.APIExprEval(code);
+						} else if (operation.equals("cfg simplifications")) {
+							//newData = api.APISimplify(code);
+						} else if (operation.equals("full analysis")) {
+							//newData = api.APIFullAnalysis(code);
+						} else if (operation.equals("empty blocks removal")) {
+							//newData = api.APIEMptyBlockRemoval(code);
+						} else {
+							return "{\"status\":\"FAIL\",\"error\":\"no operation matches the asked one\"}";
+						}
+					} else {
+						return "{\"status\":\"FAIL\",\"error\":\"no operation for the associated language\"}";
 					}
 					
 					if(setNewStep && newData.length()!=0) {

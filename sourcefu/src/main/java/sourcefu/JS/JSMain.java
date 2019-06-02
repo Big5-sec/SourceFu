@@ -29,7 +29,7 @@ import sourcefu.VBA.partialevaluator.VBACommonFunctionsEvaluator;
 import sourcefu.VBA.partialevaluator.VBAExprEvaluator;
 import sourcefu.lib.CtxValue;
 import sourcefu.lib.ProxyParseTreeListener;
-/*
+/**
  * this class is responsible for the whole dispatch and actions from options given on commandline
  */
 public class JSMain {

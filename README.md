@@ -4,7 +4,7 @@
   <p align="center">
     An hopefully generic source-to-source deobfuscator
     <br>
-    <a href="https://big5-security.com/sourcefu/"><strong>Explore SourceFu docs &raquo;</strong></a>
+    <a href="https://big5-sec.github.io/SourceFu/"><strong>Explore SourceFu docs &raquo;</strong></a>
     <br>
   </p>
 </p>
@@ -23,9 +23,9 @@
 
 ## Introduction
 
-SourceFu is a java program aiming at providing in the end a source-to-source deobfuscation framework, based on partial evaluation and compilers middle-front. Especially, the whole process aims at being documented [there](https://big5-security.com/sourcefu/functioning.html).
+SourceFu is a java program aiming at providing in the end a source-to-source deobfuscation framework, based on partial evaluation and compilers middle-front. Especially, the whole process aims at being documented [there](https://big5-sec.github.io/SourceFu/functioning.html).
 
-<img src="https://big5-security.com/files/hosting/sourcefu_exemple.gif" alt="sourcefu_gif" border="0" />    
+<img src="https://big5-sec.github.io/SourceFu/_images/sourcefu_exemple.gif" alt="sourcefu_gif" border="0" />    
 
 **DISCLAIMER** :
 
@@ -37,14 +37,14 @@ SourceFu is a java program aiming at providing in the end a source-to-source deo
 ## Quick start
 
 ```
-git clone https://github.com/Big5-sec/SourceFu.git
-cd SourceFu
-java -jar ./jar/SourceFu.jar standalone ./tests/VBA/obfuscators/JO-Obfuscator/code.vba
+wget https://github.com/Big5-sec/SourceFu/releases/download/Development/sourcefu-dev-0.01.jar
+wget https://github.com/Big5-sec/SourceFu/raw/master/tests/VBA/obfuscators/JO-Obfuscator/code.vba
+java -jar sourcefu-dev-0.01.jar standalone code.vba
 ```
     
 ## Documentation
 
-SourceFu's documentation, included in this repo in the root directory, is built with [Sphinx](http://www.sphinx-doc.org/en/master/) and publicly hosted on the author's personal [website](https://big5-security.com/sourcefu/). The docs may also be built locally.    
+SourceFu's documentation, included in this repo in the root directory, is built with [Sphinx](http://www.sphinx-doc.org/en/master/) and publicly hosted on github [pages](https://big5-sec.github.io/SourceFu/). The docs may also be built locally.    
 
 ## Building SourceFu
 
@@ -53,9 +53,10 @@ Thanks to [Gradle](https://gradle.org/), SourceFu is easy to build :
 ```
 cd SourceFu/sourcefu/
 ./gradlew fatJar
-./gradlew copyJar
 ```
 
+The generated jar will be present in `SourceFu/sourcefu/build/libs/`    
+    
 ## Wanna help?
 
 There are plenty of ways to contribute to SourceFu :
@@ -63,16 +64,16 @@ There are plenty of ways to contribute to SourceFu :
 - the simplest form is to simply show your interest in the project. :)        
 
 - You are a user who encountered a bug: Please fill in an issue, with the "bug" tag.
-A bug is encountered when SourceFu crashes, or when SourceFu analysis is wrong. An analysis is wrong when the transformations realized by the tool are not correct. However, when some code is not transformed or analyzed by the tool, it's not a bug. In this latter case, you should better submit a feature request.
+A bug is encountered when SourceFu crashes, or when SourceFu analysis is wrong. An analysis is wrong when the transformations realized by the tool are not correct. However, if the analysis made by SourceFu is not complete for you, that's not a bug, but more a SourceFu limitation. In this latter case, you should better submit a feature request so that the tool can be improved ;)
 
 - You are a user who has some feature request: Please fill in an issue with the "feature" tag.
 First, make sure that your feature is not already added in the roadmap. If not, your feature will be reviewed. If your feature request is accepted, then it will be added to roadmap, and hopefully developed then :)
        
-- You are a infosec developper wanting to integrate more features to SourceFu. Don't hesitate to make some pull requests! However, make sure your code is at least documented :)
+- You are a infosec developper wanting to integrate more features to SourceFu. Don't hesitate to make some pull requests! However, make sure your code is at least documented (even if the current one is not so well documented :P )
 
 - You are a java developper: you can certainly help me to have a better code (syntax, performance, usages, and so on...) Please don't hesitate.
 
-- You are a language expert/ANTLR expert: SourceFu works by using ANTLR grammars. You could produce some BNF grammars to extend the supported languages or improve current ones.
+- You are a language expert/ANTLR expert: SourceFu works by using ANTLR grammars. You could produce some BNF grammars to extend the supported languages or improve current ones. There are huge improvements that could be done, like working only on AST: should we rewrite the TokenStreamWriter Interface?.
 
 - You are a web developper: You can improve the current graphical interface of SourceFu.
 

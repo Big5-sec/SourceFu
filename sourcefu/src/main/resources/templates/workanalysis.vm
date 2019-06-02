@@ -139,7 +139,30 @@
             <button type="submit" value="submit" class="btn btn-primary float-right">Launch</button>
           </form>
           #else
-          <p> no operations for now in JS</p>
+          <form class="mt-4" onsubmit="newOperation()">
+            <div class="form-group row">
+              <label for="operation-select" class="col-form-label col-sm-1">Select the operation to run:</label>
+              <div class="col-sm-6">
+                <select class="form-control form-control-sm" id="operation-select">
+                  <!-- <option>delete comments</option> -->
+                  <option>rename variables (based on scope)</option>
+                  <!-- <option>dead code elimination</option> -->
+                  <!-- <option>beautify</option> -->
+                  <!-- <option>empty blocks removal</option> -->
+                  <!-- <option>expressions evaluation</option> -->
+                  <!-- <option>cfg simplifications</option> -->
+                  <!-- <option>full analysis</option> -->
+                </select>
+              </div>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="operation-save-step">
+              <label class="form-check-label" for="operation-save-step">
+                 automatically set the result of the operation as a new step?
+              </label>
+            </div>
+            <button type="submit" value="submit" class="btn btn-primary float-right">Launch</button>
+          </form>
           #end
           <br><br><br>
           <div id="output123"></div>
@@ -202,6 +225,7 @@
     <script>
       var analysisId = "$analysisId";
       var mainEditor;
+      var opeEditor;
       var mergeEditor;
       var lastOperation;
       function initMainCodeEditor(){
@@ -406,8 +430,19 @@ function newOperation() {
       if(setNewStep){
             window.location.reload();
       } else {
-        out.innerHTML = "<pre id=\"operation-output\" style=\"background:grey;\">"+myJson.output+"</pre><div class=\"row\"><div class=\"col-9\"></div><div class=\"col-2\"><button type=\"button\" class=\"btn btn-primary\" onclick=\"setNewStepFromOperation()\">keep as a new step</button></div><div class=\"col-1\"><button type=\"button\" class=\"btn btn-primary\" onclick=\"discardOperation()\">discard</button></div></div>";
-        lastOperation = operation;        
+        out.innerHTML = "<textarea id=\"operation-output\">"+myJson.output+"</textarea><div class=\"row\"><div class=\"col-9\"></div><div class=\"col-2\"><br><button type=\"button\" class=\"btn btn-primary\" onclick=\"setNewStepFromOperation()\">keep as a new step</button></div><div class=\"col-1\"><br><button type=\"button\" class=\"btn btn-primary\" onclick=\"discardOperation()\">discard</button></div></div>";
+        lastOperation = operation;
+        var opeOut = document.querySelector("#operation-output");
+        console.log(opeOut);
+        opeEditor = CodeMirror.fromTextArea(opeOut, {
+           lineNumbers: true,
+           theme: "material",
+           #if($analysis_language == "VBA")
+             mode: "vb"
+           #else
+             mode: "javascript"
+           #end
+         });
       }
         
         } else {
@@ -423,7 +458,7 @@ function discardOperation() {
 }
 
 function gatherOperationCode() {
-    return $('#operation-output')[0].innerHTML;
+    return opeEditor.getValue();
 }    
 
 function setNewStepFromOperation() {
