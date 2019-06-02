@@ -6,17 +6,24 @@ Installation
 CLI
 ====
 
-SourceFu comes as a full packaged jar file. As such, all you have to do to get SourceFu CLI running is a java-runtime on your machine. To do so, use your favorite package manager and use the command :
+SourceFu comes as a full packaged jar file. As such, all you have to do to get SourceFu CLI running is a java-runtime on your machine to launch the jar file. To do so, use your favorite package manager and use the command :
 
 .. code-block:: none
 
    $ sudo <your package manager> install openjdk-<version>-jre
 
-You should now be able to launch SourceFu by doing in a terminal
+You should now be able to get SourceFu by using this command:
 
 .. code-block:: none
 
-   $ java -jar sourcefu-<version>.jar --help
+   $ wget https://github.com/Big5-sec/SourceFu/releases/download/Development/sourcefu-latest.jar
+
+
+And finally, here is how to launch SourceFu:
+
+.. code-block:: none
+
+   $ java -jar sourcefu-latest.jar --help
 
 
 .. note:: to add SourceFu to your path, the best is to copy SourceFu in your /bin directory, then create a bash wrapper in this directory with the command above
@@ -40,9 +47,11 @@ You can then check MongoDB service status, and run the following to make sure yo
    $ mongo --eval 'db.runCommand({ connectionStatus: 1 })'
 
 
-You can now launch SourceFu API server, and check for a line like such ::
+You can now launch SourceFu API server, and check for a line like ::
 
    [qtp35369880-16] INFO org.mongodb.driver.connection - Opened connection [connectionId{localValue:2, serverValue:44}] to localhost:27017
+
+If this line is present, well, the connection to database is correct! You're now able to use all other modes of SourceFu.   
 
 webserver
 =========

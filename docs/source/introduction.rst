@@ -9,8 +9,8 @@ The documentation tries to cover the whole project :
 
 - In this page, the genesis of the project, as well as a little insight of SourceFu features and limitations will be presented. A bit more in-depth analysis of why SourceFu could be interesting is presented :doc:`there</some state of the art>`
 - A quickstart guide is presented :doc:`there </quickstart>`
-- A complete user manual is given :doc:`there </user manual>`
-- the whole methodology used by the tool is then explained :doc:`here </functioning>`.
+- An user manual is given :doc:`there </user manual>`
+- the methodology used by the tool is then explained :doc:`here </functioning>`. Beware, this pagemightnot be up to date.
 - Current ideas to improve SourceFu are presented :doc:`here </planned features>`
 - Wanna contribute? please see the :doc:`contributing guide </contributing guide>` as well as the :doc:`development guide </development guide>`. 
 

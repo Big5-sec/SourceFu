@@ -3,25 +3,7 @@ Roadmap
 
 Roadmap
 -------
-
-====================================================================== ======
-   SSTIC 2019
------------------------------------------------------------------------------
-  Steps                                                                Status
-====================================================================== ======  
-Javascript : implements expression simplification
-Javascript : gather samples
-Powershell : create functional grammar, maybe
-VBA: add tables support
-VBA: add constant return functions simplification
-API server : makes it almost functional
-Web server : makes it almost functional too :)
-core : add tests, to serve as a basis and an improve point
-documentation : complete it
-documentation : make some stats about deobfuscation for prez
-core : code formating and commenting
-====================================================================== ======  
-
+To be honest, there is so much to do that i can't write a roadmap at the moment....
 
 
 Ideas
@@ -43,11 +25,16 @@ core
 - automatically recovers elements caracterizing anti-debug and such
 - support multiple languages in the same code, like for example when a VBA macro calls an obfuscated Powershell...
 - support directly files instead of code (like office ones)
-  
+- code formatting and commenting  
+- add tests, to serve as a basis and an improve point
+- javascript support
+- powershell support
+- vba: object, tables, constant return functions and such  
 
 API server
 ~~~~~~~~~~
 - makes it more unified
+- change languages and operations detection
 
 
 web interface
@@ -60,7 +47,7 @@ web interface
 
 tests
 ~~~~~
-
+- make tests for everything
 - gather multiple samples on the web
 
 
