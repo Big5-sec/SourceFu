@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://big5-security.com/files/hosting/SourceFu.png"><img src="https://big5-sec.github.io/SourceFu/" alt="SourceFu" border="0" /></a>
+  <a href="https://big5-security.com/sourcefu/"><img src="https://big5-security.com/files/hosting/SourceFu.png" alt="SourceFu" border="0" /></a>
 
   <p align="center">
     An hopefully generic source-to-source deobfuscator
