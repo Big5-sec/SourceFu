@@ -8,14 +8,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Web interface &mdash; SourceFu 0 documentation</title>
+  <title>How to contribute &mdash; SourceFu 0 documentation</title>
   
 
   
   
   
   
-    <link rel="canonical" href="https://big5-sec.github.io/web interface.html"/>
+    <link rel="canonical" href="https://big5-sec.github.io/contributing guide.html"/>
   
 
   
@@ -37,8 +37,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Functioning" href="functioning.html" />
-    <link rel="prev" title="API server" href="API server.html" /> 
+    <link rel="next" title="Development guide" href="development guide.html" />
+    <link rel="prev" title="Releases" href="releases.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -95,15 +95,12 @@
 <li class="toctree-l1"><a class="reference internal" href="some state of the art.html">Some state of the art</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="user manual.html">User manual</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="command line interface.html">Command line interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="API server.html">API server</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Web interface</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="user manual.html">User manual</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functioning.html">Functioning</a></li>
 <li class="toctree-l1"><a class="reference internal" href="planned features.html">Roadmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="releases.html">Releases</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">How to contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development guide.html">Development guide</a></li>
 </ul>
 
             
@@ -149,9 +146,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-          <li><a href="user manual.html">User manual</a> &raquo;</li>
-        
-      <li>Web interface</li>
+      <li>How to contribute</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -168,23 +163,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="web-interface">
-<h1>Web interface<a class="headerlink" href="#web-interface" title="Permalink to this headline">¶</a></h1>
-<p>This page presents how to use the web interface of SourceFu.</p>
-<p>On accessing the home page, you’re presented with the following :</p>
-<a class="reference internal image-reference" href="_images/webserver-1.png"><img alt="_images/webserver-1.png" class="align-center" src="_images/webserver-1.png" style="width: 504.8px; height: 178.4px;" /></a>
-<p>Here, it’s basically a simple list of all your analyses, with buttons to interact with them. The first button (the gearing) is here to access the parameters of the analysis. However, be aware that the underlying page is not finished nor functional at this time. The second button permits to delete the analysis from the database. Finally, the final button permits to enter into the analysis. Please note that the title in the dark bar permits to go back to this page.</p>
-<p>By clicking the blue button on the right upper side, you can create a new analysis. You’re given for this the following form :</p>
-<a class="reference internal image-reference" href="_images/webserver-2.png"><img alt="_images/webserver-2.png" class="align-center" src="_images/webserver-2.png" style="width: 504.8px; height: 178.4px;" /></a>
-<p>On the following form, there two points to note :
-- the radio button is not working for now. There won’t be analysis launched directly.
-- When you’re selecting the language of the sample, SourceFu might try to detect it by itself. Be aware that this option may not work due to the way SourceFu makes his analysis. As such, if you’re getting an error by selecting “Try to auto-determine”, you may try to force the language by setting it expressively.</p>
-<p>When you go into an analysis, you’re presented the following :</p>
-<a class="reference internal image-reference" href="_images/webserver-3.png"><img alt="_images/webserver-3.png" class="align-center" src="_images/webserver-3.png" style="width: 503.2px; height: 352.8px;" /></a>
-<p>This first page is here simply to present some information on the analysis. <em>Original</em> stands for the original code, <em>deobfuscated</em> is not implemented for now, so don’t care, and <em>current step</em> represents the code of the current step of the analysis.</p>
-<p>On tabs, the only one interesting for now is work view:</p>
-<a class="reference internal image-reference" href="_images/webserver-4.png"><img alt="_images/webserver-4.png" class="align-center" src="_images/webserver-4.png" style="width: 503.2px; height: 352.8px;" /></a>
-<p>In this view, you’re presented with an editor at the top, where you can manaually edit files. The <em>operations</em> part below permits to launch deobfuscation operations from SourceFu. Simply select the operation you want to be run on the code from the editor, and you’re set. Finally, buttons regarding steps permit to set a new step of the analysis, or to load a previous defined step.</p>
+  <div class="section" id="how-to-contribute">
+<h1>How to contribute<a class="headerlink" href="#how-to-contribute" title="Permalink to this headline">¶</a></h1>
+<p>TBD</p>
 </div>
 
 
@@ -195,10 +176,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="functioning.html" class="btn btn-neutral float-right" title="Functioning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="development guide.html" class="btn btn-neutral float-right" title="Development guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="API server.html" class="btn btn-neutral float-left" title="API server" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="releases.html" class="btn btn-neutral float-left" title="Releases" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
