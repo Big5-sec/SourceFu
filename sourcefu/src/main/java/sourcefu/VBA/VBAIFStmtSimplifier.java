@@ -58,6 +58,7 @@ public class VBAIFStmtSimplifier extends VBAParserBaseListener {
 	//then we treat the case of the IfStmt
 	public void exitIfStmt(VBAParser.IfStmtContext ctx) {
 		Boolean evaluable = true;
+		Boolean first = true;
 		if(ctx.booleanExpression().getText().equals("True")) {
 			RewriteOperation op = new RewriteOperation(ctx.start, ctx.stop, ctx.block().getText());
 			operations.put(ctx.start, op);
@@ -71,12 +72,12 @@ public class VBAIFStmtSimplifier extends VBAParserBaseListener {
 			this.numberModifications+=1;
 		} else {
 			evaluable = false;
+			first = false;
 		}
 		
 		
 		if (ctx.elseIfBlock()!=null) {
 			int nbelseif = ctx.elseIfBlock().size();
-			Boolean first = true;
 			for(int i =0; i< nbelseif; i++) {
 				if(ctx.elseIfBlock(i).booleanExpression().getText().equals("True")) {
 					//this.rewriter.replace(ctx.start, ctx.stop, ctx.elseIfBlock(i).block().getText());

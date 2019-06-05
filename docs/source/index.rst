@@ -18,9 +18,9 @@ Welcome to SourceFu's documentation!
    functioning
    planned features
    releases
-
-..
-   contributing guide
+   contributing guide   
    development guide
+
+
    
 

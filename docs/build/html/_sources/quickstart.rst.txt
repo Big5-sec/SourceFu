@@ -10,7 +10,7 @@ We are going to use SourceFu to deobfuscate the VBA obfuscated demo sample of JO
    /tmp/SourceFu $ cd sourcefu
    /tmp/SourceFu/sourcefu $ ./gradlew fatJar
 
-We need a way to extract VBA code from this document (in future, SourceFu should be able to do it automatically). To do so, one can use oletools made by Didier Stevens.
+We need a way to extract VBA code from this document (in future, SourceFu should be able to do it automatically). To do so, one can use oletools made by Philippe Lagadec.
 
 .. code-block:: none
 
