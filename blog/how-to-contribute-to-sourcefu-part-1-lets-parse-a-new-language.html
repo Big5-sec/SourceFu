@@ -8,19 +8,19 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
 	<!--[if lt IE 9]>
-		<script src="https://big5-sec.github.io/SourceFu/blog/theme/html5.js"></script>
+		<script src="./theme/html5.js"></script>
 		<![endif]-->
-	<link href="https://big5-sec.github.io/SourceFu/blog/theme/css/ipython.css" rel="stylesheet">
+	<link href="./theme/css/ipython.css" rel="stylesheet">
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 	<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/simplex/bootstrap.min.css" rel="stylesheet">
-	<link href="https://big5-sec.github.io/SourceFu/blog/theme/css/local.css" rel="stylesheet">
-	<link href="https://big5-sec.github.io/SourceFu/blog/theme/css/pygments.css" rel="stylesheet">
+	<link href="./theme/css/local.css" rel="stylesheet">
+	<link href="./theme/css/pygments.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
 	<div class="page-header">
-	  <h1><a href="https://big5-sec.github.io/SourceFu/blog/">SourceFu blog</a></h1>
+	  <h1><a href="./">SourceFu blog</a></h1>
 		<h4><small>the place for news about its development</small></h4>
 	</div>
 	<div class="row">
@@ -33,17 +33,17 @@
 	<div>
 		Category:
 		<span itemprop="articleSection">
-			<a href="https://big5-sec.github.io/SourceFu/blog/category/tutorial.html" rel="category">tutorial</a>
+			<a href="./category/tutorial.html" rel="category">tutorial</a>
 		</span>
 	</div>
  
 	<div>
 		Tags:
 		<span itemprop="keywords">
-			<a href="https://big5-sec.github.io/SourceFu/blog/tag/tutorial.html" rel="tag">tutorial</a>
+			<a href="./tag/tutorial.html" rel="tag">tutorial</a>
 		</span>
 		<span itemprop="keywords">
-			<a href="https://big5-sec.github.io/SourceFu/blog/tag/development.html" rel="tag">development</a>
+			<a href="./tag/development.html" rel="tag">development</a>
 		</span>
 	</div>
 	<div itemprop="articleBody" class="article-body"><div class="section" id="introduction">
@@ -155,14 +155,14 @@
 </div>
 <div class="section" id="understanding-quickly-how-sourcefu-works">
 <h2>Understanding quickly how SourceFu works</h2>
-<p><small>For french people, i invite you to see the first blog <a href="/sourcefu-001-the-birth-and-the-growth.html">post</a>. A link towards a conference has been posted and by watching the associated video, you should get all the basics.</small></p><p>SourceFu sets itself between regex deobfuscators and full sandbox, by trying to provide a better performance than regex tools from a genericity point of view, while still letting an access to the source code for the analyst. To do so, it uses partial interpretation, e.g. the idea is to interpret all constant parts of the code and replace them with the final value. For interested people, this is the same principle used within <a class="reference external" href="https://mindedsecurity.github.io/jstillery/">JStillery</a>. However, I found <a class="reference external" href="https://mindedsecurity.github.io/jstillery/">JStillery</a> quite not extensible, and that's why I decided to create SourceFu. I use ANTLR in the background because I did not want to write full language parsers by hand, and maintaining a grammar is a bit simpler than a parser. More, at the start of the project, I told myself that by normalizing grammars, it would be possible to write only one code for all languages (<em>spoiler: that does not work</em>). Well no more disgressing, and let's go back to the internals. To do this partial interpretation, the flow is the following:</p>
+<p><small>For french people, i invite you to see the first blog <a href="./sourcefu-001-the-birth-and-the-growth.html">post</a>. A link towards a conference has been posted and by watching the associated video, you should get all the basics.</small></p><p>SourceFu sets itself between regex deobfuscators and full sandbox, by trying to provide a better performance than regex tools from a genericity point of view, while still letting an access to the source code for the analyst. To do so, it uses partial interpretation, e.g. the idea is to interpret all constant parts of the code and replace them with the final value. For interested people, this is the same principle used within <a class="reference external" href="https://mindedsecurity.github.io/jstillery/">JStillery</a>. However, I found <a class="reference external" href="https://mindedsecurity.github.io/jstillery/">JStillery</a> quite not extensible, and that's why I decided to create SourceFu. I use ANTLR in the background because I did not want to write full language parsers by hand, and maintaining a grammar is a bit simpler than a parser. More, at the start of the project, I told myself that by normalizing grammars, it would be possible to write only one code for all languages (<em>spoiler: that does not work</em>). Well no more disgressing, and let's go back to the internals. To do this partial interpretation, the flow is the following:</p>
 <ul class="simple">
 <li>first, the obfuscated sample is parsed and an AST is constructed (in fact this is a true AST, but a parse tree in terms of ANTLR, but I made a shortcut there for everyone to use known terms) (<em>in the future, a full ASG should be created...</em>)</li>
 <li>once the AST is constructed, one can realize optimizations based on it. In fact, ANTLR does not provide a way to directly play with the AST, as well as no <tt class="docutils literal">AST <span class="pre">-&gt;</span> code</tt> rewriter. So, i work by annotating the AST with values, and then directly modify the associated sample code by the associated values.</li>
 <li>when all implemented optimizations tell there is no more possible simplification to make to the sample, the simplified sample is rewritten.</li>
 </ul>
 <div style="margin: 0 auto;width:60%;">
-<img style="width:100%;" src="/images/sourcefu_internal_big.png">
+<img style="width:100%;" src="./images/sourcefu_internal_big.png">
 </div>
 <br><p>Optimizations are done in three phases for now:</p>
 <ul class="simple">
@@ -182,7 +182,7 @@
 </pre></div>
 <p>After having downloading the grammar, we used ANTLR to generate a lexer -<em>named Python3Lexer</em>- and a parser -<em>named Python3Parser</em>- for it. Let's explain what those two things are for ANTLR. Basically, ANTLR considers it's easier to have two distinct steps within the parsing, the first one being the lexing phase, and the second one the parsing phase. The first phase aims at grouping the stream of characters into words, or group of words that are comprehensible as basic terms for the grammar. Indeed, the grammar is often written in a manner like our brain perceive information : when we read a text, we read it word by word, each with a meaning, and not character by character. This permits for example when we want to describe an assignement in a grammar to be able to write something like this : <tt class="docutils literal">assignment : left_literal '=' expression</tt>. Those groups of words are then called tokens. Once the tokens are formed, the second phase take them to retaliate them into the structures of the grammar. Those structures finally permit to create the AST of our code.</p>
 <div style="margin: 0 auto;width:80%;">
-<img style="width:100%;" src="/images/parsing_phases.png">
+<img style="width:100%;" src="./images/parsing_phases.png">
 </div>
    <br><p>Alright, you can now compile all this java, and use Grun, which is an helper program to use the generated code, on the python_demo.py file from the beginning:</p>
 <div class="highlight"><pre><span></span><span class="gp">$</span> javac *.java
@@ -190,7 +190,7 @@
 </pre></div>
 <p>You should obtain a window similar to this one:</p>
 <div style="margin: 0 auto;width:60%;">
-<img style="width:100%;" src="/images/tree_contribute1.png">
+<img style="width:100%;" src="./images/tree_contribute1.png">
 </div>
 <br><p>As you can see, our python_demo has been decomposed into an abstract parse tree (in the terms of ANTLR). As already explained, this is the AST as I consider it, by extension. I won't detail it for now (this will be in the second post). Let's make this tree using SourceFu instead.</p>
 </div>
@@ -198,7 +198,7 @@
 <h2>Parsing our script in SourceFu</h2>
 <p>If you open SourceFu within Eclipse, the project tree should look like the following:</p>
 <div style="margin: 0 auto;width:20%;">
-<img style="width:100%;" src="/images/tree_project_contribute1.png">
+<img style="width:100%;" src="./images/tree_project_contribute1.png">
 </div>
 <br><p>Here is a quick explanation:</p>
 <ul class="simple">
@@ -208,11 +208,11 @@
 </ul>
 <p>In the following screenshot, each class corresponds to one optimization on our &quot;AST&quot;. Classes with the form <em>&lt;language&gt;Main</em> are the classes responsible to get the program parameters to invoke the correct optimizations after.</p>
 <div style="margin: 0 auto;width:20%;">
-<img style="width:100%;" src="/images/tree_project_language_contribute1.png">
+<img style="width:100%;" src="./images/tree_project_language_contribute1.png">
 </div>
 <br><p>So, let's first add our ANTLR generated java for Python within SourceFu. To do so, you can create a package named sourcefu.Python3.antlr, and put all your java files from the previous step in it. Let's also create the Python3Main.java class within the package sourcefu.Python3 :</p>
 <div style="margin: 0 auto;width:30%;">
-<img style="width:100%;" src="/images/tree_project_with_python.png">
+<img style="width:100%;" src="./images/tree_project_with_python.png">
 </div>
 <br><p>We will then create a package sourcefu.Python3, and create the class Python3Main.java. To fill this class correctly, you can then copy paste almost all code from the sourcefu.VBA.VBAMain class for example in it.</p>
 <p>Let's take a quick look of the defined functions:</p>
@@ -351,7 +351,7 @@
 </pre></div>
 <p>You should now see the following window (which is the same than the one obtained with Grun):</p>
 <div style="margin: 0 auto;width:70%;">
-<img style="width:100%;" src="/images/sourcefu_tree.png">
+<img style="width:100%;" src="./images/sourcefu_tree.png">
 </div>
 <br></div>
 <div class="section" id="to-conclude">
@@ -375,15 +375,15 @@
 					<div class="col-md-3">
 						<h4>Navigation</h4>
 						<ul class="list-unstyled my-list-style">
-							<li><a href="https://big5-sec.github.io/SourceFu/blog">SourceFu blog</a></li>
+							<li><a href=".">SourceFu blog</a></li>
 							<li><a href="https://big5-sec.github.io/SourceFu/documentation/index.html"><i class="fa fa-SourceFu Documentation "></i> SourceFu Documentation</a></li>
 						</ul>
 					</div>
 					<div class="col-md-3">
 						<h4>Categories</h4>
 						<ul class="list-unstyled my-list-style">
-							<li><a href="https://big5-sec.github.io/SourceFu/blog/category/news.html">news (1)</a></li>
-							<li><a href="https://big5-sec.github.io/SourceFu/blog/category/tutorial.html">tutorial (1)</a></li>
+							<li><a href="./category/news.html">news (1)</a></li>
+							<li><a href="./category/tutorial.html">tutorial (1)</a></li>
 						</ul>
 					</div>
 				</div>
