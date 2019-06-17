@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>How to contribute to SourceFu : part 1 - Let's parse a new language — SourceFu blog</title>
+	<meta name="description" content="Title: How to contribute to SourceFu : part 1 - Let's parse a new language; Date: 2019-06-08; Author: Zilio Nicolas">
+	<meta name="author" content="Zilio Nicolas">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+		<script src="https://big5-sec.github.io/SourceFu/blog/theme/html5.js"></script>
+		<![endif]-->
+	<link href="https://big5-sec.github.io/SourceFu/blog/theme/css/ipython.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/simplex/bootstrap.min.css" rel="stylesheet">
+	<link href="https://big5-sec.github.io/SourceFu/blog/theme/css/local.css" rel="stylesheet">
+	<link href="https://big5-sec.github.io/SourceFu/blog/theme/css/pygments.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+	<div class="page-header">
+	  <h1><a href="https://big5-sec.github.io/SourceFu/blog/">SourceFu blog</a></h1>
+		<h4><small>the place for news about its development</small></h4>
+	</div>
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+<div class="article" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="text-center article-header">
+		<h1 itemprop="name headline" class="article-title">How to contribute to SourceFu : part 1 - Let's parse a new language</h1>
+		<time datetime="2019-06-08T12:00:00+02:00" itemprop="datePublished">sam. 08 juin 2019</time>
+	</div>
+	<div>
+		Category:
+		<span itemprop="articleSection">
+			<a href="https://big5-sec.github.io/SourceFu/blog/category/tutorial.html" rel="category">tutorial</a>
+		</span>
+	</div>
+ 
+	<div>
+		Tags:
+		<span itemprop="keywords">
+			<a href="https://big5-sec.github.io/SourceFu/blog/tag/tutorial.html" rel="tag">tutorial</a>
+		</span>
+		<span itemprop="keywords">
+			<a href="https://big5-sec.github.io/SourceFu/blog/tag/development.html" rel="tag">development</a>
+		</span>
+	</div>
+	<div itemprop="articleBody" class="article-body"><div class="section" id="introduction">
+<h2>Introduction</h2>
+<p>Python language is easy to use and permits fast code writing. As such, It has started to be used by some companies as their product background. Due to intellectual property, the code had to be protected (see <a class="reference external" href="https://www.usenix.org/system/files/conference/woot13/woot13-kholia.pdf">Dropbox</a>). More, in case you're attacking a linux box, you might want to use python as an alternative to standard C. That's why some <a class="reference external" href="https://github.com/nathanlopez/Stitch">RATs</a> were developed in this language for example. Once again, it's better if you can protect your attacking tool from the analysts.</p>
+<p>The problem with Python is however that you can't really hide the source. Basically, Python's interpreter works on bytecode, a language used to run a stack-based virtual machine (more information <a class="reference external" href="https://opensource.com/article/18/4/introduction-python-bytecode">there</a>). A standard interpretation of any Python script is so like the following :</p>
+<pre class="literal-block">
+------------  compilation  ------------  execution  ------------------
+| source   | ------------&gt; | bytecode | ----------&gt; | interpretation |
+------------               ------------             ------------------
+</pre>
+<p>One can think that bytecode is obscure and that it's impossible to retrieve the source :</p>
+<div class="highlight"><pre><span></span><span class="gp">$</span> cat python_demo.py
+
+<span class="go">x = input(&#39;please enter your secret code : \n--&gt; &#39;)</span>
+<span class="go">if x == &#39;P@ssw0rd&#39;:</span>
+<span class="go">    print(&#39;welcome administrator&#39;)</span>
+<span class="go">else:</span>
+<span class="go">    print(&#39;get out!&#39;)</span>
+
+<span class="gp">$</span> python3 -m compileall python_demo.py
+<span class="go">Compiling &#39;python_demo.py&#39;...</span>
+
+<span class="gp">$</span> cat __pycache__/python_demo.cpython-&lt;version&gt;.pyc
+<span class="go">3</span>
+<span class="go">���\��@s&amp;ed�Zedkred�ed�dS)z%please enter your secret code :</span>
+<span class="go">--&gt; P@ssw0rdzwelcome administratorget out!N)�input�x�print�rr�python_demo.py&lt;module&gt;s</span>
+<span class="go">%</span>
+</pre></div>
+<p>Unfortunately, the bytecode can be easily reversed to retrieve the source, because it contains enough information. Let's try it by ourselves by first asking python to give us some information about this:</p>
+<div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> __pychache__
+<span class="gp">$</span> python3
+<span class="go">Python 3.6.7 (default, Oct 22 2018, 11:32:17)</span>
+<span class="go">[GCC 8.2.0] on linux</span>
+<span class="go">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span>
+<span class="gp">&gt;</span>&gt;&gt; import dis,marshal
+<span class="gp">&gt;</span>&gt;&gt; with open<span class="o">(</span><span class="s1">&#39;python_demo.cpython-36.pyc&#39;</span>,<span class="s1">&#39;rb&#39;</span><span class="o">)</span> as f:
+<span class="go">...     magic = f.read(12)</span>
+<span class="go">...     code = marshal.load(f)</span>
+<span class="go">...</span>
+<span class="gp">&gt;</span>&gt;&gt; dis.dis<span class="o">(</span>code<span class="o">)</span>
+<span class="go">  3           0 LOAD_NAME                0 (input)</span>
+<span class="go">              2 LOAD_CONST               0 (&#39;please enter your secret code : \n--&gt; &#39;)</span>
+<span class="go">              4 CALL_FUNCTION            1</span>
+<span class="go">              6 STORE_NAME               1 (x)</span>
+
+<span class="go">  4           8 LOAD_NAME                1 (x)</span>
+<span class="go">             10 LOAD_CONST               1 (&#39;P@ssw0rd&#39;)</span>
+<span class="go">             12 COMPARE_OP               2 (==)</span>
+<span class="go">             14 POP_JUMP_IF_FALSE       26</span>
+
+<span class="go">  5          16 LOAD_NAME                2 (print)</span>
+<span class="go">             18 LOAD_CONST               2 (&#39;welcome administrator&#39;)</span>
+<span class="go">             20 CALL_FUNCTION            1</span>
+<span class="go">             22 POP_TOP</span>
+<span class="go">             24 JUMP_FORWARD             8 (to 34)</span>
+
+<span class="go">  7     &gt;&gt;   26 LOAD_NAME                2 (print)</span>
+<span class="go">             28 LOAD_CONST               3 (&#39;get out!&#39;)</span>
+<span class="go">             30 CALL_FUNCTION            1</span>
+<span class="go">             32 POP_TOP</span>
+<span class="go">        &gt;&gt;   34 LOAD_CONST               4 (None)</span>
+<span class="go">             36 RETURN_VALUE</span>
+</pre></div>
+<p>This code is easily understable. For example the first block <tt class="docutils literal">store</tt> the variable <tt class="docutils literal">x</tt> from the result of the <tt class="docutils literal">call_function</tt>, where function name is <tt class="docutils literal">load_name</tt> : <tt class="docutils literal">input</tt>, and argument is the <tt class="docutils literal">load_const</tt> : <tt class="docutils literal">'please enter your secret code : <span class="pre">\n--&gt;</span> '</tt></p>
+<p>Let's retrieve the full code source:</p>
+<div class="highlight"><pre><span></span><span class="gp">$</span> sudo pip install uncompyle6
+<span class="gp">$</span> uncompyle6 python_demo.cpython-36.pyc
+<span class="gp">#</span> uncompyle6 version <span class="m">3</span>.3.3
+<span class="gp">#</span> Python bytecode <span class="m">3</span>.6 <span class="o">(</span><span class="m">3379</span><span class="o">)</span>
+<span class="gp">#</span> Decompiled from: Python <span class="m">2</span>.7.15rc1 <span class="o">(</span>default, Nov <span class="m">12</span> <span class="m">2018</span>, <span class="m">14</span>:31:15<span class="o">)</span>
+<span class="gp">#</span> <span class="o">[</span>GCC <span class="m">7</span>.3.0<span class="o">]</span>
+<span class="gp">#</span> Embedded file name: python_demo.py
+<span class="gp">#</span> Compiled at: <span class="m">2019</span>-06-09 <span class="m">09</span>:44:35
+<span class="gp">#</span> Size of <span class="nb">source</span> mod <span class="m">2</span>**32: <span class="m">155</span> bytes
+<span class="go">x = input(&#39;please enter your secret code : \n--&gt; &#39;)</span>
+<span class="go">if x == &#39;P@ssw0rd&#39;:</span>
+<span class="go">    print(&#39;welcome administrator&#39;)</span>
+<span class="go">else:</span>
+<span class="go">    print(&#39;get out!&#39;)</span>
+<span class="gp">#</span> okay decompiling python_demo.cpython-36.pyc
+</pre></div>
+<p>As you can see, here in the middle of the output, our original script has been retrieved. For curious people, more on python obfuscation can be found <a class="reference external" href="https://github.com/citrusbyte/python-obfuscation">there</a> (english) and <a class="reference external" href="https://www.sstic.org/media/SSTIC2014/SSTIC-actes/obfuscation_de_code_python__amlioration_des_techni/SSTIC2014-Article-obfuscation_de_code_python__amlioration_des_techniques_existantes-eyrolles_guelton.pdf">there</a> (french).</p>
+<p>So, why should I care of python obfuscation when the code can in fact be retrieved from the bytecode?</p>
+<p>Simply because the python compiler is really bad at optimizing :) As an example, you could try to disassemble the following python code: <tt class="docutils literal">x = 3 \n y = x + 3 + 2</tt> and <tt class="docutils literal">x = 3 \n y = 3 + 2 + x</tt>. Only in the latter case the <tt class="docutils literal">3 + 2</tt> is transformed into <tt class="docutils literal">5</tt>.</p>
+<p>As such, using obfuscators like the <a class="reference external" href="http://jbremer.org/python-source-obfuscation-using-asts/">following</a> (kudos to J. Bremer)  is still relevant to add a layer of anti-analysis to your python scripts.</p>
+<p>That's why python could become a SourceFu target language. In the following serie of tutorials, you will be guided step-by-step towards your first optimization (resulting in deobfuscation) for Python 3. Hopefully, most of the underlying concepts of SourceFu will be explained. After that, feel free to contribute!</p>
+</div>
+<div class="section" id="setting-up-your-development-machine-for-sourcefu">
+<h2>Setting up your development machine for SourceFu</h2>
+<p>I will take as an example the case where you run an Ubuntu distribution on your machine. We will use Eclipse as the Java IDE. Beware, the methods presented here are not necessary the best ones, and I won't make a full post on how to setup basic tools on your machine. So let's go:</p>
+<p><em>installing Development tools</em></p>
+<p>Simply enter the following commands :</p>
+<div class="highlight"><pre><span></span><span class="gp">$</span> sudo apt install default-jre git openjdk-&lt;version&gt;-jdk
+<span class="gp">$</span> sudo snap install --classic eclipse
+</pre></div>
+<p><em>get SourceFu and build it</em></p>
+<div class="highlight"><pre><span></span><span class="gp">$</span> git clone
+<span class="gp">$</span> <span class="nb">cd</span> SourceFu/sourcefu <span class="o">&amp;&amp;</span> ./gradlew fatJar
+</pre></div>
+<p><em>install ANTLR</em></p>
+<div class="highlight"><pre><span></span><span class="gp">$</span> wget https://www.antlr.org/download/antlr-4.7.2-complete.jar
+<span class="gp">$</span> mv antlr-4.7.2-complete.jar /usr/local/lib/
+<span class="gp">$</span> <span class="nb">export</span> <span class="nv">CLASSPATH</span><span class="o">=</span><span class="s2">&quot;.:/usr/local/lib/antlr-4.7.2-complete.jar:</span><span class="nv">$CLASSPATH</span><span class="s2">&quot;</span>
+<span class="gp">$</span> <span class="nb">alias</span> <span class="nv">antlr4</span><span class="o">=</span><span class="s1">&#39;java -jar /usr/local/lib/antlr-4.7.2-complete.jar&#39;</span>
+<span class="gp">$</span> <span class="nb">alias</span> <span class="nv">grun</span><span class="o">=</span><span class="s1">&#39;java org.antlr.v4.gui.TestRig&#39;</span>
+</pre></div>
+<p>You are all set!</p>
+</div>
+<div class="section" id="understanding-quickly-how-sourcefu-works">
+<h2>Understanding quickly how SourceFu works</h2>
+<p><small>For french people, i invite you to see the first blog <a href="/sourcefu-001-the-birth-and-the-growth.html">post</a>. A link towards a conference has been posted and by watching the associated video, you should get all the basics.</small></p><p>SourceFu sets itself between regex deobfuscators and full sandbox, by trying to provide a better performance than regex tools from a genericity point of view, while still letting an access to the source code for the analyst. To do so, it uses partial interpretation, e.g. the idea is to interpret all constant parts of the code and replace them with the final value. For interested people, this is the same principle used within <a class="reference external" href="https://mindedsecurity.github.io/jstillery/">JStillery</a>. However, I found <a class="reference external" href="https://mindedsecurity.github.io/jstillery/">JStillery</a> quite not extensible, and that's why I decided to create SourceFu. I use ANTLR in the background because I did not want to write full language parsers by hand, and maintaining a grammar is a bit simpler than a parser. More, at the start of the project, I told myself that by normalizing grammars, it would be possible to write only one code for all languages (<em>spoiler: that does not work</em>). Well no more disgressing, and let's go back to the internals. To do this partial interpretation, the flow is the following:</p>
+<ul class="simple">
+<li>first, the obfuscated sample is parsed and an AST is constructed (in fact this is a true AST, but a parse tree in terms of ANTLR, but I made a shortcut there for everyone to use known terms) (<em>in the future, a full ASG should be created...</em>)</li>
+<li>once the AST is constructed, one can realize optimizations based on it. In fact, ANTLR does not provide a way to directly play with the AST, as well as no <tt class="docutils literal">AST <span class="pre">-&gt;</span> code</tt> rewriter. So, i work by annotating the AST with values, and then directly modify the associated sample code by the associated values.</li>
+<li>when all implemented optimizations tell there is no more possible simplification to make to the sample, the simplified sample is rewritten.</li>
+</ul>
+<div style="margin: 0 auto;width:60%;">
+<img style="width:100%;" src="/images/sourcefu_internal_big.png">
+</div>
+<br><p>Optimizations are done in three phases for now:</p>
+<ul class="simple">
+<li>The first phase is what I call &quot;1-pass optimizations&quot;, e.g. optimizations that should only be done once. There, I suppress comments in the code and replace the language-defined constants.</li>
+<li>For the second phase, recursively, I make &quot;N-pass optimizations&quot;. Basically, each optimizations implemented there can benefit from the result of the other optimizations, and until I can't make any modification, the full loop is taken. There, one can find optimizations such as constants propagation, expression simplification, deadstore removal and CFG simplifications.</li>
+<li>In the final phase of optimizations, code is beautified and symbols are renamed with their scope to avoid too ressembling symbols.</li>
+</ul>
+<p>All optimizations will be hopefully explained in the documentation. So take a look at it :).</p>
+</div>
+<div class="section" id="first-parse-of-our-python-script">
+<h2>First parse of our python script</h2>
+<p>The first step of SourceFu's analysis is to parse the code and to create the AST. Let's do this for Python, by using the official grammar.</p>
+<div class="highlight"><pre><span></span><span class="gp">$</span> wget https://raw.githubusercontent.com/antlr/grammars-v4/master/python3/Python3.g4
+<span class="gp">$</span> antlr4 Python3.g4
+<span class="gp">$</span> ls -l
+<span class="go">&lt; you should see a lot of java files there&gt;</span>
+</pre></div>
+<p>After having downloading the grammar, we used ANTLR to generate a lexer -<em>named Python3Lexer</em>- and a parser -<em>named Python3Parser</em>- for it. Let's explain what those two things are for ANTLR. Basically, ANTLR considers it's easier to have two distinct steps within the parsing, the first one being the lexing phase, and the second one the parsing phase. The first phase aims at grouping the stream of characters into words, or group of words that are comprehensible as basic terms for the grammar. Indeed, the grammar is often written in a manner like our brain perceive information : when we read a text, we read it word by word, each with a meaning, and not character by character. This permits for example when we want to describe an assignement in a grammar to be able to write something like this : <tt class="docutils literal">assignment : left_literal '=' expression</tt>. Those groups of words are then called tokens. Once the tokens are formed, the second phase take them to retaliate them into the structures of the grammar. Those structures finally permit to create the AST of our code.</p>
+<div style="margin: 0 auto;width:80%;">
+<img style="width:100%;" src="/images/parsing_phases.png">
+</div>
+   <br><p>Alright, you can now compile all this java, and use Grun, which is an helper program to use the generated code, on the python_demo.py file from the beginning:</p>
+<div class="highlight"><pre><span></span><span class="gp">$</span> javac *.java
+<span class="gp">$</span> grun Python3 file_input -gui &lt; python_demo.py
+</pre></div>
+<p>You should obtain a window similar to this one:</p>
+<div style="margin: 0 auto;width:60%;">
+<img style="width:100%;" src="/images/tree_contribute1.png">
+</div>
+<br><p>As you can see, our python_demo has been decomposed into an abstract parse tree (in the terms of ANTLR). As already explained, this is the AST as I consider it, by extension. I won't detail it for now (this will be in the second post). Let's make this tree using SourceFu instead.</p>
+</div>
+<div class="section" id="parsing-our-script-in-sourcefu">
+<h2>Parsing our script in SourceFu</h2>
+<p>If you open SourceFu within Eclipse, the project tree should look like the following:</p>
+<div style="margin: 0 auto;width:20%;">
+<img style="width:100%;" src="/images/tree_project_contribute1.png">
+</div>
+<br><p>Here is a quick explanation:</p>
+<ul class="simple">
+<li>the default package contains a single file SourceFu.java. This is the <strong>&quot;main&quot;</strong> of our application.</li>
+<li>There are then package in the form <em>sourcefu.&lt;language&gt;.*</em>. A package in this category means it is used to analyze the associated language. Packages ending with &quot;antlr&quot; are packages containing the output of the grammar processing from ANTLR. Packages ending with &quot;helpers&quot; define some generic classes that are used by the main analysis classes of language processing. Finally, most of the job is done by the classes within the packages <em>source.&lt;language&gt;</em>.</li>
+<li>To finish, packages <em>sourcefu.database</em>, <em>sourcefu.apiserver</em>, <em>sourcefu.webserver</em> are there for the UI interface and the API server possibilities of SourceFu.</li>
+</ul>
+<p>In the following screenshot, each class corresponds to one optimization on our &quot;AST&quot;. Classes with the form <em>&lt;language&gt;Main</em> are the classes responsible to get the program parameters to invoke the correct optimizations after.</p>
+<div style="margin: 0 auto;width:20%;">
+<img style="width:100%;" src="/images/tree_project_language_contribute1.png">
+</div>
+<br><p>So, let's first add our ANTLR generated java for Python within SourceFu. To do so, you can create a package named sourcefu.Python3.antlr, and put all your java files from the previous step in it. Let's also create the Python3Main.java class within the package sourcefu.Python3 :</p>
+<div style="margin: 0 auto;width:30%;">
+<img style="width:100%;" src="/images/tree_project_with_python.png">
+</div>
+<br><p>We will then create a package sourcefu.Python3, and create the class Python3Main.java. To fill this class correctly, you can then copy paste almost all code from the sourcefu.VBA.VBAMain class for example in it.</p>
+<p>Let's take a quick look of the defined functions:</p>
+<ul class="simple">
+<li>there are first the constructors for our classes, one constructor with every parameters from the command line, and one parameter with no parameters, indicating simply that a full analysis is wanted.</li>
+<li>the function getCharStreamFromData is simply a text transformation. ANLTR works indeed on Stream and not on raw text directly.</li>
+<li>the function run is the actual analysis function.</li>
+<li>the functions generateTokens and generateTree will be explained by the next function.</li>
+<li>Finally, here is our interesting function: showTree.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kt">void</span> <span class="nf">showTree</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">doShow</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">CharStream</span> <span class="n">input</span> <span class="o">=</span> <span class="n">getCharStreamFromData</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">temp_data</span><span class="o">);</span>
+                <span class="n">CommonTokenStream</span> <span class="n">tokens</span> <span class="o">=</span> <span class="n">generateTokens</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
+                <span class="n">VBAParser</span> <span class="n">parser</span> <span class="o">=</span> <span class="k">new</span> <span class="n">VBAParser</span><span class="o">(</span><span class="n">tokens</span><span class="o">);</span>
+                <span class="n">ParseTree</span> <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="na">startRule</span><span class="o">();</span>
+                <span class="n">TreeViewer</span> <span class="n">viewr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TreeViewer</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">parser</span><span class="o">.</span><span class="na">getRuleNames</span><span class="o">()),</span><span class="n">tree</span><span class="o">);</span>
+                <span class="n">viewr</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+        <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+<p>In this function, one can see that first, an input stream is constructed from text. Once this is done, the stream is processed by our first ANTLR generated classes : VBALexer. A stream of tokens is created, and those tokens are put as input within our parser by the class VBAParser. However, no processing has occured at this time. ANLTR indeed requires that you call your parser with the first rule of it, e.g. the rule that is containing all other rules from your grammar. This permits to tell from which part of your grammar you should analyze the input stream. Finally, from the tree generated by the call to our first rule, a graphical interface is created to show it.</p>
+<p>You should so modify the class as the following :</p>
+<div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Python3Main</span> <span class="o">{</span>
+        <span class="c1">//class variables for multipass</span>
+        <span class="n">Integer</span> <span class="n">numberModifications</span><span class="o">;</span>
+        <span class="kt">boolean</span> <span class="n">doWork</span><span class="o">=</span><span class="kc">true</span><span class="o">;</span>
+
+    <span class="c1">//our arguments of optimizations to be done</span>
+        <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">doBeautify</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="c1">//private String indent = &quot;  &quot;; TODO:later</span>
+        <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">doComments</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">doDeadStore</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">doEmpty</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">doRename</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">doShow</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">doConstantsModify</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">doPartialEval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="c1">//variables holding the source</span>
+        <span class="n">String</span> <span class="n">initial_data</span><span class="o">;</span> <span class="c1">//original source</span>
+        <span class="kd">private</span> <span class="n">Integer</span> <span class="n">verbosityLevel</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span>
+        <span class="n">String</span> <span class="n">temp_data</span><span class="o">=</span><span class="kc">null</span><span class="o">;</span> <span class="c1">//source while deobfuscated</span>
+        <span class="n">String</span> <span class="n">final_data</span><span class="o">;</span> <span class="c1">//source at the end of operations</span>
+
+        <span class="kd">public</span> <span class="nf">Python3Main</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">doBeautify</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">doComments</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">doDeadStore</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">doEmpty</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">doRename</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">doConstantsModify</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">doPartialEval</span><span class="o">,</span> <span class="n">String</span> <span class="n">inputFile</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">doShow</span><span class="o">,</span>  <span class="n">Integer</span> <span class="n">verbosityLevel</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">doBeautify</span> <span class="o">=</span> <span class="n">doBeautify</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">doComments</span> <span class="o">=</span> <span class="n">doComments</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">doDeadStore</span> <span class="o">=</span> <span class="n">doDeadStore</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">doEmpty</span> <span class="o">=</span> <span class="n">doEmpty</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">doRename</span> <span class="o">=</span> <span class="n">doRename</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">doShow</span> <span class="o">=</span> <span class="n">doShow</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">doConstantsModify</span> <span class="o">=</span> <span class="n">doConstantsModify</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">doPartialEval</span> <span class="o">=</span> <span class="n">doPartialEval</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">verbosityLevel</span><span class="o">=</span><span class="n">verbosityLevel</span><span class="o">;</span>
+
+            <span class="k">try</span> <span class="o">{</span>
+                     <span class="kt">byte</span><span class="o">[]</span> <span class="n">file_contents</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">readAllBytes</span><span class="o">(</span><span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">inputFile</span><span class="o">));</span>
+                     <span class="k">this</span><span class="o">.</span><span class="na">initial_data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">file_contents</span><span class="o">);</span>
+            <span class="o">}</span><span class="k">catch</span><span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">){</span>
+                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;cannot get input&quot;</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="nf">Python3Main</span><span class="o">(</span><span class="n">String</span> <span class="n">inputData</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">initial_data</span> <span class="o">=</span> <span class="n">inputData</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="n">CharStream</span> <span class="nf">getCharStreamFromData</span><span class="o">(</span><span class="n">String</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">CharStream</span> <span class="n">input</span> <span class="o">=</span> <span class="n">CharStreams</span><span class="o">.</span><span class="na">fromString</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">input</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="n">CommonTokenStream</span> <span class="nf">generateTokens</span><span class="o">(</span><span class="n">CharStream</span> <span class="n">input</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">Python3Lexer</span> <span class="n">lexer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Python3Lexer</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
+            <span class="n">CommonTokenStream</span> <span class="n">tokens</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CommonTokenStream</span><span class="o">(</span><span class="n">lexer</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">tokens</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">//the following function is in fact really used for debug</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">showTree</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">doShow</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">CharStream</span> <span class="n">input</span> <span class="o">=</span> <span class="n">getCharStreamFromData</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">temp_data</span><span class="o">);</span>
+                    <span class="n">CommonTokenStream</span> <span class="n">tokens</span> <span class="o">=</span> <span class="n">generateTokens</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
+                    <span class="n">Python3Parser</span> <span class="n">parser</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Python3Parser</span><span class="o">(</span><span class="n">tokens</span><span class="o">);</span>
+                    <span class="n">ParseTree</span> <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="na">file_input</span><span class="o">();</span>
+                    <span class="n">TreeViewer</span> <span class="n">viewr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TreeViewer</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">parser</span><span class="o">.</span><span class="na">getRuleNames</span><span class="o">()),</span><span class="n">tree</span><span class="o">);</span>
+                    <span class="n">viewr</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="c1">//the actual function doing smthing</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">temp_data</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">initial_data</span><span class="o">;</span>
+            <span class="n">showTree</span><span class="o">();</span>
+        <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+<p>You should now simply adds a switch within the main function to call your code when the input language is python. You should find the following code within the class <em>sourcefu.java</em>:</p>
+<div class="highlight"><pre><span></span><span class="k">if</span><span class="o">(</span><span class="n">input_type</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;VBA&quot;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">VBAMain</span> <span class="n">new_main</span> <span class="o">=</span> <span class="k">new</span> <span class="n">VBAMain</span><span class="o">(</span><span class="n">doBeautify</span><span class="o">,</span><span class="n">doComments</span><span class="o">,</span><span class="n">doDeadStore</span><span class="o">,</span><span class="n">doEmpty</span><span class="o">,</span><span class="n">doRename</span><span class="o">,</span> <span class="n">doConstantsModify</span><span class="o">,</span> <span class="n">doPartialEval</span><span class="o">,</span> <span class="n">inputFile</span><span class="o">,</span> <span class="n">show</span><span class="o">,</span> <span class="n">verbosityLevel</span><span class="o">);</span>
+            <span class="n">new_main</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+            <span class="c1">//System.out.println(new_main.getdata());</span>
+            <span class="k">new</span> <span class="n">Printing</span><span class="o">().</span><span class="na">printSidebySide</span><span class="o">(</span><span class="n">new_main</span><span class="o">.</span><span class="na">getinitdata</span><span class="o">(),</span> <span class="n">new_main</span><span class="o">.</span><span class="na">getdata</span><span class="o">());</span> <span class="c1">//TODO: output choice</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">outputFile</span><span class="o">!=</span><span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">new</span> <span class="n">Printing</span><span class="o">().</span><span class="na">printToFile</span><span class="o">(</span><span class="n">new_main</span><span class="o">.</span><span class="na">getdata</span><span class="o">(),</span> <span class="n">outputFile</span><span class="o">);</span>
+            <span class="o">}</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">input_type</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;JS&quot;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">JSMain</span> <span class="n">new_main</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSMain</span><span class="o">(</span><span class="n">doBeautify</span><span class="o">,</span><span class="n">doComments</span><span class="o">,</span><span class="n">doDeadStore</span><span class="o">,</span><span class="n">doEmpty</span><span class="o">,</span><span class="n">doRename</span><span class="o">,</span> <span class="n">doConstantsModify</span><span class="o">,</span> <span class="n">doPartialEval</span><span class="o">,</span> <span class="n">inputFile</span><span class="o">,</span> <span class="n">show</span><span class="o">,</span> <span class="n">verbosityLevel</span><span class="o">);</span>
+            <span class="n">new_main</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+            <span class="c1">//System.out.println(new_main.getdata());</span>
+            <span class="k">new</span> <span class="n">Printing</span><span class="o">().</span><span class="na">printSidebySide</span><span class="o">(</span><span class="n">new_main</span><span class="o">.</span><span class="na">getinitdata</span><span class="o">(),</span> <span class="n">new_main</span><span class="o">.</span><span class="na">getdata</span><span class="o">());</span> <span class="c1">//TODO: output choice</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">outputFile</span><span class="o">!=</span><span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">new</span> <span class="n">Printing</span><span class="o">().</span><span class="na">printToFile</span><span class="o">(</span><span class="n">new_main</span><span class="o">.</span><span class="na">getdata</span><span class="o">(),</span> <span class="n">outputFile</span><span class="o">);</span>
+            <span class="o">}</span>
+    <span class="o">}</span><span class="k">else</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&quot;cannot do the job due to input type&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+</pre></div>
+<p>Simply add the following:</p>
+<div class="highlight"><pre><span></span><span class="o">}</span> <span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">input_type</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;Python&quot;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">Python3Main</span> <span class="n">new_main</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Python3Main</span><span class="o">(</span><span class="n">doBeautify</span><span class="o">,</span><span class="n">doComments</span><span class="o">,</span><span class="n">doDeadStore</span><span class="o">,</span><span class="n">doEmpty</span><span class="o">,</span><span class="n">doRename</span><span class="o">,</span> <span class="n">doConstantsModify</span><span class="o">,</span> <span class="n">doPartialEval</span><span class="o">,</span> <span class="n">inputFile</span><span class="o">,</span> <span class="n">show</span><span class="o">,</span> <span class="n">verbosityLevel</span><span class="o">);</span>
+            <span class="n">new_main</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+    <span class="o">}</span>
+</pre></div>
+<p>The final modification to be done is to add Python to the list of input languages. To do so, modify the following line in <em>sourcefu.java</em>:</p>
+<div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">input_types</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">&quot;VBA&quot;</span><span class="o">,</span> <span class="s">&quot;JS&quot;</span><span class="o">);</span>
+</pre></div>
+<p>with the following</p>
+<div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">input_types</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">&quot;VBA&quot;</span><span class="o">,</span> <span class="s">&quot;JS&quot;</span><span class="o">,</span> <span class="s">&quot;Python&quot;</span><span class="o">);</span>
+</pre></div>
+<p>Let's finally build our new SourceFu and run it:</p>
+<div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> SourceFu/sourcefu
+<span class="gp">$</span> ./gradlew fatJar
+<span class="gp">$</span> java -jar ./build/libs/sourcefu-latest.jar standalone -t Python ~/python_demo.py -s
+</pre></div>
+<p>You should now see the following window (which is the same than the one obtained with Grun):</p>
+<div style="margin: 0 auto;width:70%;">
+<img style="width:100%;" src="/images/sourcefu_tree.png">
+</div>
+<br></div>
+<div class="section" id="to-conclude">
+<h2>To conclude</h2>
+<p>We were able to get an understanding of SourceFu internals, as well as we started to extend SourceFu with Python support. In the next post, we will see how we can interact with the grammar, and modify it to make it more usable.</p>
+<p>For people who want to understand more on ANTLR, I can only recommend you to read the book <a class="reference external" href="https://pragprog.com/book/tpantlr2/the-definitive-antlr-4-reference">The definitive ANTLR 4 reference</a>. Once you read this book, you will be able to understand everything within SourceFu.</p>
+<p>Finally, I hope this post was not too boring. To be honest, i just realized how difficult it is to adjust the level of the post to the reader. Don't hesitate to tell me if anything is wrong.</p>
+</div>
+</div>
+	<hr>
+    <p itemprop="name">by Zilio Nicolas</p>
+</div>
+		</div>
+	</div> 	<!-- <hr> -->
+</div> <!-- /container -->
+<footer class="aw-footer bg-danger">
+	<div class="container"> <!-- footer -->
+		<div class="row">
+			<div class="col-md-10 col-md-offset-1">
+				<div class="row">
+					<div class="col-md-3">
+						<h4>Navigation</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="https://big5-sec.github.io/SourceFu/blog">SourceFu blog</a></li>
+							<li><a href="https://big5-sec.github.io/SourceFu/blog/http://google.com"><i class="fa fa-title1 "></i> title1</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Categories</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="https://big5-sec.github.io/SourceFu/blog/category/news.html">news (1)</a></li>
+							<li><a href="https://big5-sec.github.io/SourceFu/blog/category/tutorial.html">tutorial (1)</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+	$("div.collapseheader").click(function () {
+		$header = $(this).children("span").first();
+		$codearea = $(this).children(".input_area");
+		$codearea.slideToggle(500, function () {
+			$header.text(function () {
+				return $codearea.is(":visible") ? "Collapse Code" : "Expand Code";
+			});
+		});
+	});
+});
+</script>
+</body>
+</html>

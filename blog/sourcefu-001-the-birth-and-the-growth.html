@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>SourceFu 0.01 - the birth... and the growth? — SourceFu blog</title>
+	<meta name="description" content="Title: SourceFu 0.01 - the birth... and the growth?; Date: 2019-06-08; Author: Zilio Nicolas">
+	<meta name="author" content="Zilio Nicolas">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+		<script src="https://big5-sec.github.io/SourceFu/blog/theme/html5.js"></script>
+		<![endif]-->
+	<link href="https://big5-sec.github.io/SourceFu/blog/theme/css/ipython.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/simplex/bootstrap.min.css" rel="stylesheet">
+	<link href="https://big5-sec.github.io/SourceFu/blog/theme/css/local.css" rel="stylesheet">
+	<link href="https://big5-sec.github.io/SourceFu/blog/theme/css/pygments.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+	<div class="page-header">
+	  <h1><a href="https://big5-sec.github.io/SourceFu/blog/">SourceFu blog</a></h1>
+		<h4><small>the place for news about its development</small></h4>
+	</div>
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+<div class="article" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="text-center article-header">
+		<h1 itemprop="name headline" class="article-title">SourceFu 0.01 - the birth... and the growth?</h1>
+		<time datetime="2019-06-08T12:00:00+02:00" itemprop="datePublished">sam. 08 juin 2019</time>
+	</div>
+	<div>
+		Category:
+		<span itemprop="articleSection">
+			<a href="https://big5-sec.github.io/SourceFu/blog/category/news.html" rel="category">news</a>
+		</span>
+	</div>
+ 
+	<div>
+		Tags:
+		<span itemprop="keywords">
+			<a href="https://big5-sec.github.io/SourceFu/blog/tag/news.html" rel="tag">news</a>
+		</span>
+		<span itemprop="keywords">
+			<a href="https://big5-sec.github.io/SourceFu/blog/tag/development.html" rel="tag">development</a>
+		</span>
+	</div>
+	<div itemprop="articleBody" class="article-body"><br><p>On the 7th of June, I presented SourceFu at <a class="reference external" href="https://www.sstic.org/2019/presentation/sourcefu_deobfuscation_through_partial_interpretation/">SSTIC</a>, a french infosec conference. This was the opportunity for me to release it publicly, and to explain quickly how it works. As a reminder, the idea is to use partial interpretation on AST to provide a deobfuscating tool, using <a class="reference external" href="https://www.antlr.org/">ANTLR</a> in the background to be able to work on multiple languages. While the tool might be usable by analysts in its current state, it's clearly still in its infancy and its results are not that good. As an example, you can see in the following video two examples of analyzing some VBA obfuscated samples. While the first sample is analyzed pretty much correctly, the second one is not deofuscated completely:</p>
+<div style="background-color:black;">
+<div style="margin: 0 auto;width:80%;">
+<video style="width:100%;" controls src="/static/sourcefu_full_1.mp4"></video>
+</div>
+</div>
+<br><p>Once the conference ended, my main questioning was about the fact that such a tool might interest people or not... Indeed, I'm not an analyst myself, and I don't know if it's important or not to deobfuscate malicious codes. By the way, if you're reading this blog post, i would be really interested in a little mail explaining if deobfuscation is for you a day to day job, or if it's utterly useless...</p>
+<p>Well, <a class="reference external" href="https://twitter.com/decalage2">&#64;Decalage2</a> showed some interest into the project, and one of his tweet presenting the tool received some positive feedback.</p>
+<div style="margin: 0 auto;width:50%;">
+<img style="width:100%;" src="/images/tweet_decalage2.png">
+</div>
+<br><p>From this, my decision has been taken : I shall continue to dev this tool! Hence, that's why I launch this blog. People will be able to get some news regarding the development, as well as research on deobfuscation and tutorials. As such, don't hesitate to check out at least sometimes this blog :)</p>
+<p>So, where to go on from now? For the next month, I will be quite busy due to my participation in <a class="reference external" href="https://lehack.org/en">le Hack</a> infosec con, where I'm part of the CTF organizers. However, I should be able to work on SourceFu from time to time. Priority will be set to the <em>contributing documentation</em> and to the base core quality of VBA code. Indeed, some deobfuscation routines appear to be quite wrong...</p>
+<p>See ya!</p>
+</div>
+	<hr>
+    <p itemprop="name">by Zilio Nicolas</p>
+</div>
+		</div>
+	</div> 	<!-- <hr> -->
+</div> <!-- /container -->
+<footer class="aw-footer bg-danger">
+	<div class="container"> <!-- footer -->
+		<div class="row">
+			<div class="col-md-10 col-md-offset-1">
+				<div class="row">
+					<div class="col-md-3">
+						<h4>Navigation</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="https://big5-sec.github.io/SourceFu/blog">SourceFu blog</a></li>
+							<li><a href="https://big5-sec.github.io/SourceFu/blog/http://google.com"><i class="fa fa-title1 "></i> title1</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Categories</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="https://big5-sec.github.io/SourceFu/blog/category/news.html">news (1)</a></li>
+							<li><a href="https://big5-sec.github.io/SourceFu/blog/category/tutorial.html">tutorial (1)</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+	$("div.collapseheader").click(function () {
+		$header = $(this).children("span").first();
+		$codearea = $(this).children(".input_area");
+		$codearea.slideToggle(500, function () {
+			$header.text(function () {
+				return $codearea.is(":visible") ? "Collapse Code" : "Expand Code";
+			});
+		});
+	});
+});
+</script>
+</body>
+</html>
