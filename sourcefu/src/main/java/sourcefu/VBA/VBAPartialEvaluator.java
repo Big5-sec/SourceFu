@@ -1,6 +1,8 @@
 package sourcefu.VBA;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -56,9 +58,23 @@ public class VBAPartialEvaluator {
 	}
 	
 	public void applyModifications() {
+		List<Token> opToRemove = new ArrayList<Token>();
+		//gosh this is ugly but we need to check for overlapping instructions
+		// like for example with have ((2+3)+(3+2)), where the last parenthesis gets a rewrite inside the big one...
 		for(Entry<Token, RewriteOperation> entry: this.operations.entrySet()) {
-		    //System.out.print("entry : ");
-		    //System.out.println(entry.getValue().start);
+			for(Entry<Token, RewriteOperation> entry2: this.operations.entrySet()) {
+				if((entry2.getValue().start.getTokenIndex() > entry.getValue().start.getTokenIndex()) && 
+						(entry2.getValue().stop.getTokenIndex() < entry.getValue().stop.getTokenIndex())) {
+							opToRemove.add(entry2.getKey());
+				}
+			}
+		}
+		
+		for(Token entry: opToRemove) {
+			this.operations.remove(entry);
+		}
+		
+		for(Entry<Token, RewriteOperation> entry: this.operations.entrySet()) {
 			this.rewriter.replace(entry.getValue().start, entry.getValue().stop, entry.getValue().replacement);
 		}
 	}

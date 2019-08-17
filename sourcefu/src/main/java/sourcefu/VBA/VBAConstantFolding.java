@@ -41,6 +41,7 @@ public class VBAConstantFolding extends VBAParserBaseListener{
 	
 	public void enterStartRule(VBAParser.StartRuleContext ctx) { 
 		global = new ConstantFoldingBaseScope();
+		this.currentScope = global;
 	}
 
 	public void enterFunctionStmt(VBAParser.FunctionStmtContext ctx) {
@@ -123,7 +124,7 @@ public class VBAConstantFolding extends VBAParserBaseListener{
 				return;
 			}
 		}
-		
+		//System.out.println(this.currentScope);
 		if(this.currentScope.checkInVariables(ctx.getText())) {
 		    //System.out.println("checking variable : "+ctx.getText());
 			if(this.currentScope.getVariableValue(ctx.getText()) == null) {

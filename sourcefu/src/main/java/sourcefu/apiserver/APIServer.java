@@ -41,7 +41,7 @@ public class APIServer {
 					InputStream analysisFileStream = request.raw().getPart("analysisfile").getInputStream();
 					String analysisData = IOUtils.toString(analysisFileStream);
 					analysisData = StringEscapeUtils.unescapeHtml(analysisData);
-					
+
 					if(analysisLanguage.contains("Try to auto-determine")) {
 						String language = new APIServerUtils().getSampleLanguage(analysisData);
 						if (!language.equals("undefined")) {
@@ -52,11 +52,11 @@ public class APIServer {
 							return "{\"status\":\"FAIL\",\"error\":\"could not set language automatically\",\"error_id\":\"3\"}";
 						}
 					}
-					
+
 					if(analysisLanguage.equals("Javascript")) {  //TODO: we should set the language as part of an enum instead
 						analysisLanguage = "JS";
 					}
-					
+
 					Analysis analysis = new Analysis(analysisName, analysisLanguage, analysisFilename, analysisData);                                
 					String ret = AnalysisController.createAnalysis(analysis);
 					if(ret.equals("fail")) {
@@ -112,7 +112,8 @@ public class APIServer {
 					if(i != null) {
 						Map<String, String> output = new HashMap<String, String>();
 						output.put("status", "OK");
-						output.put("code",StringEscapeUtils.escapeHtml(i.getCode()));
+						//output.put("code",StringEscapeUtils.escapeHtml(i.getCode()));
+						output.put("code", i.getCode());
 						GsonBuilder builder = new GsonBuilder();
 						Gson gson = builder.create();
 						String json = gson.toJson(output);
@@ -120,7 +121,7 @@ public class APIServer {
 					} else {
 						return "{\"status\":\"FAIL\",\"error\":\"step not found\"}";
 					}
-						
+
 				});
 
 				get("/delAnalysis/:analysisId", (request, response) -> {
@@ -138,27 +139,27 @@ public class APIServer {
 			});
 			path("/actions", () -> {
 				/* the following code is a bit outdated, don't care*/
-//				post("/deleteComments", (request, response) -> {
-//					request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"));
-//					InputStream inputStream = request.raw().getPart("input").getInputStream();
-//					String input = IOUtils.toString(inputStream);
-//					VBAAPIUtils api = new VBAAPIUtils();
-//					String data = api.APIDeleteComments(input);
-//
-//					if(data != null) {
-//						Map<String, String> output = new HashMap<String, String>();
-//						output.put("status", "OK");
-//						output.put("output",data);
-//						GsonBuilder builder = new GsonBuilder();
-//						Gson gson = builder.create();
-//						String json = gson.toJson(output);
-//						return json;
-//					} else {
-//						return "{\"status\":\"FAIL\",\"output\":\"\"}"; 
-//					}
-//
-//				});
-				
+				//				post("/deleteComments", (request, response) -> {
+				//					request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"));
+				//					InputStream inputStream = request.raw().getPart("input").getInputStream();
+				//					String input = IOUtils.toString(inputStream);
+				//					VBAAPIUtils api = new VBAAPIUtils();
+				//					String data = api.APIDeleteComments(input);
+				//
+				//					if(data != null) {
+				//						Map<String, String> output = new HashMap<String, String>();
+				//						output.put("status", "OK");
+				//						output.put("output",data);
+				//						GsonBuilder builder = new GsonBuilder();
+				//						Gson gson = builder.create();
+				//						String json = gson.toJson(output);
+				//						return json;
+				//					} else {
+				//						return "{\"status\":\"FAIL\",\"output\":\"\"}"; 
+				//					}
+				//
+				//				});
+
 				post("/newOperation", (request, response) -> {
 					request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"));
 					InputStream codeStream = request.raw().getPart("code").getInputStream();
@@ -174,75 +175,79 @@ public class APIServer {
 					if(setNewStepStr.equals("true")) {
 						setNewStep = true;
 					}
-					
+
 					InputStream analysisIdStream = request.raw().getPart("analysisId").getInputStream();
 					String analysisId = IOUtils.toString(analysisIdStream);
-					
-					Analysis analysis = AnalysisController.getAnalysisById(analysisId);		
-					String newData = "";
-					if(analysis.getLanguage().equals("VBA")) {
-						VBAAPIUtils api = new VBAAPIUtils();
-						if(operation.equals("delete comments")) {
-							newData = api.APIDeleteComments(code);
-						} else if (operation.equals("rename variables (based on scope)")) {
-							newData = api.APIRename(code);
-						} else if (operation.equals("dead code elimination")) {
-							newData = api.APIDeadStore(code);
-						} else if (operation.equals("beautify")) {
-							newData = api.APIBeautify(code);
-						} else if (operation.equals("expressions evaluation")) {
-							newData = api.APIExprEval(code);
-						} else if (operation.equals("cfg simplifications")) {
-							newData = api.APISimplify(code);
-						} else if (operation.equals("full analysis")) {
-							newData = api.APIFullAnalysis(code);
-						} else if (operation.equals("empty blocks removal")) {
-							newData = api.APIEMptyBlockRemoval(code);
+
+					Analysis analysis = AnalysisController.getAnalysisById(analysisId);
+
+//					try {
+						String newData = "";
+						if(analysis.getLanguage().equals("VBA")) {
+							VBAAPIUtils api = new VBAAPIUtils();
+							if(operation.equals("delete comments")) {
+								newData = api.APIDeleteComments(code);
+							} else if (operation.equals("rename variables (based on scope)")) {
+								newData = api.APIRename(code);
+							} else if (operation.equals("dead code elimination")) {
+								newData = api.APIDeadStore(code);
+							} else if (operation.equals("beautify")) {
+								newData = api.APIBeautify(code);
+							} else if (operation.equals("expressions evaluation")) {
+								newData = api.APIExprEval(code);
+							} else if (operation.equals("cfg simplifications")) {
+								newData = api.APISimplify(code);
+							} else if (operation.equals("full analysis")) {
+								newData = api.APIFullAnalysis(code);
+							} else if (operation.equals("empty blocks removal")) {
+								newData = api.APIEMptyBlockRemoval(code);
+							} else {
+								return "{\"status\":\"FAIL\",\"error\":\"no operation matches the asked one\"}";
+							}
+						} else if(analysis.getLanguage().equals("JS")) {
+							JSAPIUtils api = new JSAPIUtils();
+							if(operation.equals("delete comments")) {
+								//newData = api.APIDeleteComments(code);
+							} else if (operation.equals("rename variables (based on scope)")) {
+								newData = api.APIRename(code);
+							} else if (operation.equals("dead code elimination")) {
+								//newData = api.APIDeadStore(code);
+							} else if (operation.equals("beautify")) {
+								//newData = api.APIBeautify(code);
+							} else if (operation.equals("expressions evaluation")) {
+								//newData = api.APIExprEval(code);
+							} else if (operation.equals("cfg simplifications")) {
+								//newData = api.APISimplify(code);
+							} else if (operation.equals("full analysis")) {
+								//newData = api.APIFullAnalysis(code);
+							} else if (operation.equals("empty blocks removal")) {
+								//newData = api.APIEMptyBlockRemoval(code);
+							} else {
+								return "{\"status\":\"FAIL\",\"error\":\"no operation matches the asked one\"}";
+							}
 						} else {
-							return "{\"status\":\"FAIL\",\"error\":\"no operation matches the asked one\"}";
+							return "{\"status\":\"FAIL\",\"error\":\"no operation for the associated language\"}";
 						}
-					} else if(analysis.getLanguage().equals("JS")) {
-						JSAPIUtils api = new JSAPIUtils();
-						if(operation.equals("delete comments")) {
-							//newData = api.APIDeleteComments(code);
-						} else if (operation.equals("rename variables (based on scope)")) {
-							newData = api.APIRename(code);
-						} else if (operation.equals("dead code elimination")) {
-							//newData = api.APIDeadStore(code);
-						} else if (operation.equals("beautify")) {
-							//newData = api.APIBeautify(code);
-						} else if (operation.equals("expressions evaluation")) {
-							//newData = api.APIExprEval(code);
-						} else if (operation.equals("cfg simplifications")) {
-							//newData = api.APISimplify(code);
-						} else if (operation.equals("full analysis")) {
-							//newData = api.APIFullAnalysis(code);
-						} else if (operation.equals("empty blocks removal")) {
-							//newData = api.APIEMptyBlockRemoval(code);
-						} else {
-							return "{\"status\":\"FAIL\",\"error\":\"no operation matches the asked one\"}";
+
+						if(setNewStep && newData.length()!=0) {
+							AnalysisController.setNewStep(analysisId, "post " + operation, newData);
 						}
-					} else {
-						return "{\"status\":\"FAIL\",\"error\":\"no operation for the associated language\"}";
-					}
-					
-					if(setNewStep && newData.length()!=0) {
-						AnalysisController.setNewStep(analysisId, "post " + operation, newData);
-					}
-					
-					if(newData.length()!=0) {
-						Map<String, String> output = new HashMap<String, String>();
-						output.put("status", "OK");
-						output.put("output",StringEscapeUtils.escapeHtml(newData));
-						GsonBuilder builder = new GsonBuilder();
-						Gson gson = builder.create();
-						String json = gson.toJson(output);
-						return json;
-					}
-					
+
+						if(newData.length()!=0) {
+							Map<String, String> output = new HashMap<String, String>();
+							output.put("status", "OK");
+							output.put("output",StringEscapeUtils.escapeHtml(newData));
+							GsonBuilder builder = new GsonBuilder();
+							Gson gson = builder.create();
+							String json = gson.toJson(output);
+							return json;
+						}
+//					} catch(Exception e) {
+//						return "{\"status\":\"FAIL\",\"output\":\"\",\"msg\":\"Error while analyzing the sample. Please make sure the sample has a correct syntax. If this is a SourceFu's error, please report\"}";
+//					}
 					return "{\"status\":\"FAIL\",\"output\":\"\"}";
 				});
-				
+
 			});   
 		});
 	}

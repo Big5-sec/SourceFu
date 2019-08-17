@@ -54,9 +54,11 @@ public class VBACommonFunctionsEvaluator extends VBAParserBaseListener {
 			ctxvalue.setValue(ctx, Double.valueOf(floatText));
 		}else if (ctx.OCTLITERAL()!=null) {
 			String octText = ctx.OCTLITERAL().getText();
+			octText = octText.substring(2);
 			ctxvalue.setValue(ctx,Integer.valueOf(octText,8));
 		}else if (ctx.HEXLITERAL()!=null) {
 			String hexText = ctx.HEXLITERAL().getText();
+			hexText = hexText.substring(2);
 			ctxvalue.setValue(ctx,Integer.valueOf(hexText,16));
 		}else {
 			throw new RuntimeException("parsing problem in exitNumberLiteral, can't find a correct child");

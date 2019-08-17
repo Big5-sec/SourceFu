@@ -581,6 +581,16 @@ public class VBAExprEvaluator extends VBAParserBaseListener {
 		}
 	}
 	
+	public void exitParenthesizedExpr(VBAParser.ParenthesizedExprContext ctx) {
+		Object value = ctxvalue.getValue(ctx.expression());
+		if(value instanceof Number) {
+			Number value1 = ctxvalue.getValue(ctx.expression());
+			ctxvalue.setValue(ctx,value1);
+			RewriteOperation op = new RewriteOperation(ctx.start, ctx.stop, String.valueOf(value1));
+			operations.put(ctx.start, op);
+		}
+	}
+	
 	public void exitLiteralExpr(VBAParser.LiteralExprContext ctx) {
 		//System.out.println("literal expr");
 		Object value = ctxvalue.getValue(ctx.literalExpression());

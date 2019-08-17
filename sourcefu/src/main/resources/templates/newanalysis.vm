@@ -28,10 +28,7 @@
     <link href="test_css.css" rel="stylesheet">
   </head>
   <body>
-    <nav class="navbar navbar-dark static-top bg-dark p-0 flex-md-nowrap">
-      <a class="navbar-brand col-sm-3 col-md-2 ml-2" href="/">SourceFu</a>
-      <input class="form-control form-control-dark col-sm-3 mr-5" type="text" placeholder="Search" aria-label="Search">
-    </nav>
+    #parse("/templates/header.vm")
     <main role="main" class="mt-4 ml-sm-5 mr-sm-5 px-4">
       <div class="container">
           <h2 class="pb-4 mt-4">Creating a new analysis</h2>

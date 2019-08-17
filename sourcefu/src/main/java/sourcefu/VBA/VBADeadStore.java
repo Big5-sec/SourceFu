@@ -56,6 +56,7 @@ public class VBADeadStore extends VBAParserBaseListener{
 	
 	public void enterStartRule(VBAParser.StartRuleContext ctx) { 
 		global = new DeadStoreBaseScope();
+		this.currentScope = global;
 	}
 
 	public void enterFunctionStmt(VBAParser.FunctionStmtContext ctx) { 
@@ -154,6 +155,7 @@ public class VBADeadStore extends VBAParserBaseListener{
 			}
 		}
 		
+
 		if(this.currentScope.checkInDefs(ctx.getText())) { //if the identifier is not in def, don't care 
 			//checking 1) is the identifier the lexpression of one of our defs?, 2) if we are in the def, like X=X+1
 			if(this.currentScope.getDefByName(ctx.getText()).getVarNameTokenIndex().equals(ctx.start.getTokenIndex())) {

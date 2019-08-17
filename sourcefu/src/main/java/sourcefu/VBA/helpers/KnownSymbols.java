@@ -13,6 +13,8 @@ public class KnownSymbols {
 	private void createKnownSymbols() {
 		this.symbols.add("AutoOpen");
 		this.symbols.add("AutoClose");
+		
+		this.symbols.add("ActiveDocument");
 
 		this.symbols.add("vbAbort");
 		this.symbols.add("vbAbortRetryIgnore");

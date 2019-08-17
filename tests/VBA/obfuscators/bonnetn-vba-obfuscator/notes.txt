@@ -1,0 +1,6 @@
+[INFO] VBA obfuscator - Thomas LEROY & Nicolas BONNET
+[INFO] Loaded the code.
+[INFO] Paste this in your VBA editor to add the Document Variable:
+ActiveDocument.Variables.Add Name:="JHrRaXxSNavEXsPS", Value:="F5dnHfb7aejgC1yt4cfaTHJFY6gHzmfJYplkc6ncsOB5oOFWyHatKj64Q8mcieKny8xqcnv1e+T8GZCUBb2iOO3i3/JcSpqhEskSvu1adtzFVmhq8aX7pZAOnM3YnJ6/"
+[INFO] Line 'huCcEuisokw = KLsswoxYZW(Array[...]' is too long.
+[INFO] Obfuscated the code.

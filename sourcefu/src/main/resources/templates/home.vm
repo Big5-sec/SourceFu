@@ -10,9 +10,7 @@
     <title>SourceFu</title>
   </head>
   <body>
-    <nav class="navbar navbar-dark static-top bg-dark p-0 flex-md-nowrap">
-      <a class="navbar-brand col-sm-3 col-md-2 ml-2" href="#">SourceFu</a>
-    </nav>
+    #parse("/templates/header.vm")
     <main role="main" class="mt-4 ml-sm-5 mr-sm-5 px-4">
       <div class="row">
         <div class="col-sm-6">

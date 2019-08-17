@@ -82,6 +82,7 @@ public class VBARenamer extends VBAParserBaseListener{
 	
 	public void exitIdentifier(VBAParser.IdentifierContext ctx) {
 		boolean checkFunction = false;
+		
 		if(ctx.untypedIdentifier()!=null) {
 			if (ctx.untypedIdentifier().identifierValue().keyword()!=null) {
 				return;
